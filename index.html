@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoltPC Engineering | Engineer Your Performance</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>
+        // Shim for process.env to avoid ReferenceErrors in the browser environment
+        //npm run dev:all
+        window.process = window.process || { env: {} };
+
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7b1dcd",
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#0a0a0a",
+                        "surface-dark": "#1f1f1f",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "sans": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(123, 29, 205, 0.4)',
+                        'glow-hover': '0 0 25px rgba(123, 29, 205, 0.6)',
+                        'light-card': '0 10px 30px -10px rgba(0, 0, 0, 0.05)',
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-nav {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        .light .glass-nav {
+            background: rgba(247, 246, 248, 0.85);
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .grid-bg {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(123, 29, 205, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(123, 29, 205, 0.05) 1px, transparent 1px);
+        }
+
+        .light .grid-bg {
+            background-image: linear-gradient(to right, rgba(123, 29, 205, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(123, 29, 205, 0.08) 1px, transparent 1px);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        .light ::-webkit-scrollbar-track {
+            background: #f7f6f8;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #312938;
+            border-radius: 4px;
+        }
+
+        .light ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #7b1dcd;
+        }
+
+        /* Smooth transitions for theme switching */
+        * {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+    </style>
+    <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.36.0"
+  }
+}
+</script>
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white antialiased overflow-x-hidden selection:bg-primary selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/index.jsx"></script>
+</body>
+
+</html>

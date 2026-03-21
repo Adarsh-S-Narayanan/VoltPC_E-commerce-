@@ -1,0 +1,8 @@
+{
+  "name": "VoltPC Engineering",
+  "description": "High-performance custom PC builder with integrated AI build assistant and performance tuning guides.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
