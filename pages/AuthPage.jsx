@@ -9,7 +9,7 @@ import {
   GoogleAuthProvider
 } from "firebase/auth";
 import * as api from "../services/apiService";
-const AuthPage = ({ onAuthComplete, initialMode = "signin" }) => {
+const AuthPage = ({ onAuthComplete, onBack, initialMode = "signin" }) => {
   const [mode, setMode] = useState(initialMode);
   const [formData, setFormData] = useState({
     email: "",
@@ -45,7 +45,8 @@ const AuthPage = ({ onAuthComplete, initialMode = "signin" }) => {
         username: result.user.displayName,
         email: result.user.email,
         tier: "Elite Engineer",
-        uid: result.user.uid
+        uid: result.user.uid,
+        photoURL: result.user.photoURL || null
       };
       try {
         await api.updateUserProfile(user.uid, {
@@ -155,7 +156,16 @@ const AuthPage = ({ onAuthComplete, initialMode = "signin" }) => {
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        <div className="bg-white dark:bg-surface-dark border border-black/5 dark:border-white/5 rounded-3xl p-10 shadow-2xl backdrop-blur-xl transition-all duration-300">
+        <div className="bg-white dark:bg-surface-dark border border-black/5 dark:border-white/5 rounded-3xl p-10 shadow-2xl backdrop-blur-xl transition-all duration-300 relative">
+          <button
+            onClick={onBack}
+            className="absolute top-8 left-8 text-gray-400 hover:text-primary transition-colors flex items-center gap-2 group"
+          >
+            <span className="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">
+              arrow_back
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Back</span>
+          </button>
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-primary/10 border border-primary/20 text-primary mb-6 transition-all">
               <span className="material-symbols-outlined text-4xl">bolt</span>

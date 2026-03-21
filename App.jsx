@@ -174,7 +174,8 @@ const App = () => {
           username: firebaseUser.displayName || firebaseUser.email.split("@")[0],
           email: firebaseUser.email,
           tier: "Elite Engineer",
-          uid: firebaseUser.uid
+          uid: firebaseUser.uid,
+          photoURL: firebaseUser.photoURL || null
         };
         setUser(loggedInUser);
         
@@ -378,7 +379,7 @@ const App = () => {
   const renderContent = () => {
     switch (currentView) {
       case "auth":
-        return <AuthPage onAuthComplete={handleAuthComplete} />;
+        return <AuthPage onAuthComplete={handleAuthComplete} onBack={() => navigateTo("landing")} />;
       case "lab":
         return (
           <BuildLabWorkspace
