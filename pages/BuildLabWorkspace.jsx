@@ -6,6 +6,17 @@ const BuildLabWorkspace = ({ initialParts, onCheckout, components = [] }) => {
   const [filterBrand, setFilterBrand] = useState(null);
   const [toast, setToast] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isManifestOpen, setIsManifestOpen] = useState(window.innerWidth > 1024);
+
+  // Sync manifest state with window size for responsive default
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1024) setIsManifestOpen(true);
+      else setIsManifestOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (initialParts) {
@@ -143,7 +154,16 @@ const BuildLabWorkspace = ({ initialParts, onCheckout, components = [] }) => {
 
   const togglePart = (part) => {
     if (part.stock === 0) return;
-    setSelectedParts((prev) => ({ ...prev, [part.category]: part }));
+    
+    const isAlreadySelected = selectedParts[part.category]?.id === part.id;
+    
+    if (isAlreadySelected) {
+      removePart(part.category);
+    } else {
+      setSelectedParts((prev) => ({ ...prev, [part.category]: part }));
+      // Auto-open manifest when a part is added if it's closed
+      if (!isManifestOpen) setIsManifestOpen(true);
+    }
   };
 
   const removePart = (category) => {
@@ -170,60 +190,88 @@ const BuildLabWorkspace = ({ initialParts, onCheckout, components = [] }) => {
   };
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-background-light dark:bg-background-dark pt-20 relative transition-colors duration-300">
-      {/* Side Navigation Tabs */}
-      <div className="w-20 bg-gray-50 dark:bg-[#0d0d0d] border-r border-black/5 dark:border-white/5 py-8 flex flex-col items-center gap-8 overflow-y-auto scrollbar-hide transition-colors z-40">
-        {steps.map((step) => {
-          const hasPart = !!selectedParts[step.cat];
-          const hasIssue = validationReport.some(
-            (i) => i.category === step.cat,
-          );
-          return (
-            <button
-              key={step.cat}
-              onClick={() => setCurrentStep(step.cat)}
-              className={`flex flex-col items-center gap-1.5 transition-all group ${
-                currentStep === step.cat
-                  ? "opacity-100 scale-110"
-                  : "opacity-40 hover:opacity-70"
-              }`}
-            >
-              <div
-                className={`size-10 rounded-xl flex items-center justify-center border transition-all ${
-                  currentStep === step.cat
-                    ? "bg-primary border-primary shadow-glow text-white"
-                    : hasPart
-                      ? hasIssue
-                        ? "bg-red-500/20 border-red-500 text-red-500"
-                        : "bg-green-500/20 border-green-500 text-green-500"
-                      : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-gray-400 dark:text-gray-600"
-                }`}
-              >
-                <span className="material-symbols-outlined text-[20px]">
-                  {hasIssue && currentStep !== step.cat
-                    ? "warning"
-                    : hasPart && currentStep !== step.cat
-                      ? "check"
-                      : step.icon}
-                </span>
-              </div>
-              <span
-                className={`text-[9px] font-black uppercase tracking-widest ${
-                  currentStep === step.cat
-                    ? "text-primary"
-                    : "text-gray-500 dark:text-white"
-                }`}
-              >
-                {step.cat}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+    <div className="flex-1 flex flex-col bg-background-light dark:bg-background-dark pt-16 md:pt-20 relative transition-colors duration-300">
+      <div className="flex-1 flex flex-col md:flex-row">
+        <section className="flex-1 flex flex-col relative min-w-0 bg-background-light dark:bg-background-dark">
+          {/* Top Navigation Tabs - Sticky */}
+          <div className="sticky top-[72px] md:top-[80px] z-40 w-full bg-gray-50/90 dark:bg-[#0d0d0d]/90 backdrop-blur-md border-b border-black/5 dark:border-white/5 py-4 flex flex-row items-center justify-start md:justify-center gap-4 md:gap-8 overflow-x-auto scrollbar-hide transition-colors px-6">
+            {steps.map((step) => {
+              const hasPart = !!selectedParts[step.cat];
+              const hasIssue = validationReport.some(
+                (i) => i.category === step.cat,
+              );
+              return (
+                <button
+                  key={step.cat}
+                  onClick={() => {
+                    setCurrentStep(step.cat);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className={`flex flex-col items-center gap-1 transition-all group shrink-0 ${
+                    currentStep === step.cat
+                      ? "opacity-100 scale-105"
+                      : "opacity-40 hover:opacity-70"
+                  }`}
+                >
+                  <div
+                    className={`size-8 md:size-10 rounded-lg md:rounded-xl flex items-center justify-center border transition-all ${
+                      currentStep === step.cat
+                        ? "bg-primary border-primary shadow-glow text-white"
+                        : hasPart
+                          ? hasIssue
+                            ? "bg-red-500/20 border-red-500 text-red-500"
+                            : "bg-green-500/20 border-green-500 text-green-500"
+                          : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-gray-400 dark:text-gray-600"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[18px] md:text-[20px]">
+                      {hasIssue && currentStep !== step.cat
+                        ? "warning"
+                        : hasPart && currentStep !== step.cat
+                          ? "check"
+                          : step.icon}
+                    </span>
+                  </div>
+                  <span
+                    className={`text-[8px] md:text-[9px] font-black uppercase tracking-widest ${
+                      currentStep === step.cat
+                        ? "text-primary"
+                        : "text-gray-500 dark:text-white"
+                    }`}
+                  >
+                    {step.cat}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
 
-      <section className="flex-1 flex flex-col relative min-w-0 bg-background-light dark:bg-background-dark overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
-          <div className="max-w-6xl mx-auto">
+          <div className="p-6 md:p-10 relative">
+            {/* Proceed Toggle Button - Mobile Only - Liquidmorphic */}
+            <div className="fixed right-4 bottom-4 z-[45] lg:hidden">
+              <button
+                onClick={() => setIsManifestOpen(!isManifestOpen)}
+                className={`group flex items-center gap-2 px-5 py-3 rounded-full shadow-2xl transition-all duration-500 hover:scale-105 active:scale-95 border border-white/20 backdrop-blur-2xl ${
+                  isManifestOpen 
+                    ? "opacity-0 pointer-events-none" 
+                    : "opacity-100 bg-gradient-to-r from-primary/80 to-purple-600/80 text-white shadow-glow"
+                }`}
+              >
+                <div className="size-6 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <span className="material-symbols-outlined text-[18px]">
+                    shopping_basket
+                  </span>
+                </div>
+                <span className="font-black uppercase tracking-[0.2em] text-[10px]">
+                  Proceed
+                </span>
+                <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
+                  chevron_right
+                </span>
+              </button>
+            </div>
+
+            <div className="max-w-6xl mx-auto">
             <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
                 <div className="flex items-center gap-3 mb-2">
@@ -232,7 +280,7 @@ const BuildLabWorkspace = ({ initialParts, onCheckout, components = [] }) => {
                   </span>
                   <div className="h-px w-10 bg-primary/30"></div>
                 </div>
-                <h2 className="text-gray-900 dark:text-white text-5xl font-black font-display tracking-tighter uppercase transition-colors">
+                <h2 className="text-gray-900 dark:text-white text-3xl md:text-5xl font-black font-display tracking-tighter uppercase transition-colors">
                   Select {currentStep}
                 </h2>
               </div>
@@ -271,7 +319,7 @@ const BuildLabWorkspace = ({ initialParts, onCheckout, components = [] }) => {
               </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-32">
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-3 md:gap-8 pb-32">
               {currentInventory.map((part, idx) => {
                 const compatibilityError = checkPartCompatibility(part);
                 return (
@@ -340,7 +388,21 @@ const BuildLabWorkspace = ({ initialParts, onCheckout, components = [] }) => {
         )}
       </section>
 
-      <aside className="w-full md:w-96 flex-none flex flex-col border-l border-black/5 dark:border-white/5 bg-white dark:bg-[#0a0a0a] relative z-30 shadow-2xl transition-colors duration-300">
+
+      {/* Manifest Backdrop for mobile */}
+      {isManifestOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55] lg:hidden animate-in fade-in duration-300"
+          onClick={() => setIsManifestOpen(false)}
+        />
+      )}
+
+      {/* Live Manifest Drawer (Togglable on Mobile) */}
+      <aside
+        className={`fixed lg:sticky lg:top-20 right-0 top-0 h-full lg:h-[calc(100vh-80px)] w-[65%] sm:w-[50%] lg:w-[420px] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-xl lg:backdrop-blur-0 border-l border-black/5 dark:border-white/5 z-[60] shadow-[0_0_50px_rgba(0,0,0,0.3)] lg:shadow-none transition-all duration-700 cubic-bezier(0.4, 0, 0.2, 1) transform flex flex-col ${
+          isManifestOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
+        }`}
+      >
         <div className="p-8 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-gradient-to-r from-primary/5 dark:from-white/[0.02] to-transparent transition-colors">
           <div>
             <h1 className="text-gray-900 dark:text-white text-xl font-black font-display uppercase tracking-[0.2em]">
@@ -350,9 +412,23 @@ const BuildLabWorkspace = ({ initialParts, onCheckout, components = [] }) => {
               Real-time Telemetry
             </p>
           </div>
-          <div
-            className={`size-3 rounded-full ${isCritical ? "bg-red-500" : "bg-primary"} animate-ping`}
-          ></div>
+          <div className="flex items-center gap-4">
+            <div
+              className={`size-3 rounded-full ${isCritical ? "bg-red-500" : "bg-primary"} animate-ping`}
+            ></div>
+            <button
+              onClick={() => setIsManifestOpen(false)}
+              className="lg:hidden p-2 text-gray-400 hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            <button
+              onClick={() => setIsManifestOpen(false)}
+              className="hidden p-2 text-gray-400 hover:text-primary transition-colors hover:rotate-180 duration-500"
+            >
+              <span className="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 custom-scrollbar">
@@ -451,6 +527,7 @@ const BuildLabWorkspace = ({ initialParts, onCheckout, components = [] }) => {
           {toast}
         </div>
       )}
+      </div>
     </div>
   );
 };
@@ -471,7 +548,7 @@ const TagFilter = ({ label, active, onClick }) => (
 const ComponentCard = ({ part, active, error, onAdd, style }) => (
   <div
     style={style}
-    className={`group relative flex flex-col bg-white dark:bg-surface-dark rounded-3xl overflow-hidden border transition-all duration-500 animate-in fade-in zoom-in ${
+    className={`group relative flex flex-col bg-white dark:bg-surface-dark rounded-2xl md:rounded-3xl overflow-hidden border transition-all duration-500 animate-in fade-in zoom-in ${
       active
         ? "border-primary shadow-glow ring-2 ring-primary/20 scale-[1.02]"
         : error
@@ -487,19 +564,19 @@ const ComponentCard = ({ part, active, error, onAdd, style }) => (
       />
       <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-surface-dark via-transparent to-transparent opacity-60"></div>
 
-      <div className="absolute top-4 left-4 flex gap-2">
+      <div className="absolute top-2 left-2 md:top-4 md:left-4 flex flex-col md:flex-row gap-1 md:gap-2">
         <span
-          className={`text-[9px] font-black px-3 py-1 rounded-full shadow-lg backdrop-blur-md border border-white/10 uppercase tracking-widest ${part.brand === "INTEL" ? "bg-blue-600/80 text-white" : "bg-orange-600/80 text-white"}`}
+          className={`text-[7px] md:text-[9px] font-black px-1.5 md:px-3 py-0.5 md:py-1 rounded-full shadow-lg backdrop-blur-md border border-white/10 uppercase tracking-widest ${part.brand === "INTEL" ? "bg-blue-600/80 text-white" : "bg-orange-600/80 text-white"}`}
         >
           {part.brand}
         </span>
         {error ? (
-          <span className="bg-red-600 text-white text-[9px] font-black px-3 py-1 rounded-full shadow-lg border border-red-500/20 uppercase tracking-widest">
+          <span className="bg-red-600 text-white text-[7px] md:text-[9px] font-black px-1.5 md:px-3 py-0.5 md:py-1 rounded-full shadow-lg border border-red-500/20 uppercase tracking-widest">
             Conflict
           </span>
         ) : (
           part.badge && (
-            <span className="bg-primary text-white text-[9px] font-black px-3 py-1 rounded-full shadow-lg border border-primary/20 animate-pulse uppercase tracking-widest">
+            <span className="bg-primary text-white text-[7px] md:text-[9px] font-black px-1.5 md:px-3 py-0.5 md:py-1 rounded-full shadow-lg border border-primary/20 animate-pulse uppercase tracking-widest">
               {part.badge}
             </span>
           )
@@ -507,17 +584,17 @@ const ComponentCard = ({ part, active, error, onAdd, style }) => (
       </div>
     </div>
 
-    <div className="p-6 flex flex-col flex-1">
-      <div className="mb-6">
-        <p className="text-primary text-[9px] font-black uppercase tracking-[0.2em] mb-1">
+    <div className="p-3 md:p-6 flex flex-col flex-1">
+      <div className="mb-3 md:mb-6">
+        <p className="text-primary text-[7px] md:text-[9px] font-black uppercase tracking-[0.2em] mb-0.5 md:mb-1">
           {part.socket || "Universal"}
         </p>
-        <h3 className="text-gray-900 dark:text-white text-xl font-black font-display leading-tight group-hover:text-primary transition-colors h-14 line-clamp-2 transition-colors">
+        <h3 className="text-gray-900 dark:text-white text-sm md:text-xl font-black font-display leading-tight group-hover:text-primary transition-colors h-10 md:h-14 line-clamp-2 transition-colors">
           {part.name}
         </h3>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="hidden md:grid grid-cols-2 gap-4 mb-8">
         {(part.specs ? Object.entries(part.specs) : []).map(([key, val]) => (
           <div
             key={key}
@@ -533,13 +610,13 @@ const ComponentCard = ({ part, active, error, onAdd, style }) => (
         ))}
       </div>
 
-      <div className="mt-auto flex items-center justify-between pt-6 border-t border-black/5 dark:border-white/5 transition-colors">
-        <p className="text-2xl font-black font-mono text-gray-900 dark:text-white leading-none transition-colors">
+      <div className="mt-auto flex flex-col md:flex-row md:items-center justify-between pt-3 md:pt-6 border-t border-black/5 dark:border-white/5 transition-colors gap-3 md:gap-0">
+        <p className="text-lg md:text-2xl font-black font-mono text-gray-900 dark:text-white leading-none transition-colors">
           ₹{(part.price || 0).toLocaleString()}
         </p>
         <button
           onClick={onAdd}
-          className={`flex items-center gap-2 py-3 px-6 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${
+          className={`flex items-center justify-center gap-1 md:gap-2 py-2 md:py-3 px-3 md:px-6 rounded-lg md:rounded-xl font-black uppercase tracking-widest text-[7px] md:text-[10px] transition-all w-full md:w-auto ${
             active
               ? "bg-primary text-white shadow-glow"
               : error
@@ -547,7 +624,7 @@ const ComponentCard = ({ part, active, error, onAdd, style }) => (
                 : "bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10"
           }`}
         >
-          <span className="material-symbols-outlined text-[16px]">
+          <span className="material-symbols-outlined text-[12px] md:text-[16px]">
             {active ? "check" : "add"}
           </span>
           {active ? "Active" : "Add to rig"}
@@ -601,7 +678,10 @@ const ManifestItem = ({ part, hasError, onRemove }) => (
 
 const EmptySlot = ({ icon, label, active, onClick }) => (
   <button
-    onClick={onClick}
+    onClick={() => {
+      onClick();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }}
     className={`flex items-center gap-4 p-4 rounded-2xl border border-dashed transition-all text-left ${
       active
         ? "bg-primary/5 border-primary/50 text-primary"

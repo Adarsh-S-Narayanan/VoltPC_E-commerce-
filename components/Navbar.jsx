@@ -15,6 +15,7 @@ const Navbar = ({
   onToggleTheme,
   onNavigateAdmin,
 }) => {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const isAdmin = user?.email === "admin@voltpc.com";
   return (
     <div className="fixed top-0 left-0 right-0 z-50 border-b border-black/5 dark:border-[#312938] glass-nav">
@@ -40,7 +41,7 @@ const Navbar = ({
           {isAdmin && <NavButton onClick={onNavigateAdmin} label="Admin" />}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <button
             onClick={onToggleTheme}
             className="p-2 text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center justify-center"
@@ -69,9 +70,7 @@ const Navbar = ({
           <button
             onClick={onNavigateAccount}
             className={`hidden sm:flex items-center gap-2 border border-black/10 dark:border-[#312938] hover:border-primary text-gray-900 dark:text-white px-4 py-2 rounded-lg transition-all duration-300 ${
-              user
-                ? "bg-gray-100 dark:bg-surface-dark"
-                : "bg-primary text-white shadow-glow"
+              user ? "bg-gray-100 dark:bg-surface-dark" : "bg-primary text-white shadow-glow"
             }`}
           >
             <span className="material-symbols-outlined text-[20px]">
@@ -81,11 +80,95 @@ const Navbar = ({
               {user ? "Account" : "Sign In"}
             </span>
           </button>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center justify-center"
+          >
+            <span className="material-symbols-outlined text-3xl">
+              {isMenuOpen ? "close" : "menu"}
+            </span>
+          </button>
         </div>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      <div
+        className={`fixed inset-0 top-20 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-xl z-40 transition-all duration-300 md:hidden ${
+          isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <nav className="flex flex-col items-center justify-center h-[calc(100vh-80px)] gap-8 p-6 text-center">
+          <MobileNavButton
+            onClick={() => {
+              onNavigateLab();
+              setIsMenuOpen(false);
+            }}
+            label="Build Lab"
+          />
+          <MobileNavButton
+            onClick={() => {
+              onNavigatePrebuilds();
+              setIsMenuOpen(false);
+            }}
+            label="Pre-builds"
+          />
+          <MobileNavButton
+            onClick={() => {
+              onNavigateAccessories();
+              setIsMenuOpen(false);
+            }}
+            label="Accessories"
+          />
+          <MobileNavButton
+            onClick={() => {
+              onNavigateSupport();
+              setIsMenuOpen(false);
+            }}
+            label="Support"
+          />
+          <MobileNavButton
+            onClick={() => {
+              onNavigateReviews();
+              setIsMenuOpen(false);
+            }}
+            label="Reviews"
+          />
+          {isAdmin && (
+            <MobileNavButton
+              onClick={() => {
+                onNavigateAdmin();
+                setIsMenuOpen(false);
+              }}
+              label="Admin"
+            />
+          )}
+          {!user && (
+            <button
+              onClick={() => {
+                onNavigateAccount();
+                setIsMenuOpen(false);
+              }}
+              className="mt-4 px-8 py-4 bg-primary text-white rounded-xl font-black uppercase tracking-widest shadow-glow"
+            >
+              Sign In
+            </button>
+          )}
+        </nav>
       </div>
     </div>
   );
 };
+
+const MobileNavButton = ({ onClick, label }) => (
+  <button
+    onClick={onClick}
+    className="text-gray-900 dark:text-white text-3xl font-black uppercase tracking-tighter hover:text-primary transition-colors"
+  >
+    {label}
+  </button>
+);
 
 const NavButton = ({ onClick, label }) => (
   <button

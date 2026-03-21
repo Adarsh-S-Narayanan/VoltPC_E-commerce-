@@ -26,7 +26,7 @@ const FeaturedPCs = ({ onConfigure, onAddToCart, pcs = [], components = [] }) =>
       </div>
 
       {displayPcs.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
           {displayPcs.map((pc) => {
             const stockIssue = isOutOfStock(pc);
             return (
@@ -55,9 +55,9 @@ const FeaturedPCs = ({ onConfigure, onAddToCart, pcs = [], components = [] }) =>
                   </div>
                 </div>
 
-                <div className="p-8 flex flex-col flex-grow">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-primary text-[10px] font-black tracking-[0.2em] uppercase">
+                <div className="p-3 md:p-8 flex flex-col flex-grow">
+                  <div className="flex items-center justify-between mb-1 md:mb-2">
+                    <span className="text-primary text-[7px] md:text-[10px] font-black tracking-[0.2em] uppercase">
                       {pc.tagline || (pc.brand || "ENGINEERED")}
                     </span>
                     <div className="flex items-center gap-1">
@@ -69,48 +69,52 @@ const FeaturedPCs = ({ onConfigure, onAddToCart, pcs = [], components = [] }) =>
                       </span>
                     </div>
                   </div>
-                  <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-3 tracking-tighter uppercase transition-colors">
+                  <h3 className="text-sm md:text-3xl font-black text-gray-900 dark:text-white mb-1 md:mb-3 tracking-tighter uppercase transition-colors h-10 md:h-auto line-clamp-2">
                     {pc.title || pc.name}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2 transition-colors">
+                  <p className="hidden md:block text-gray-600 dark:text-gray-400 text-sm mb-8 leading-relaxed line-clamp-2 transition-colors">
                     {pc.description || "Precision engineered for high-performance computing tasks."}
                   </p>
 
-                  <div className="space-y-4 mb-10 border-t border-black/5 dark:border-white/5 pt-6 transition-colors font-mono">
+                  <div className="hidden md:block space-y-4 mb-10 border-t border-black/5 dark:border-white/5 pt-6 transition-colors font-mono">
                     <SpecItem icon="memory" text={pc.specs?.cpu || "N/A"} />
                     <SpecItem icon="videogame_asset" text={pc.specs?.gpu || "N/A"} />
                     <SpecItem icon="bolt" text={pc.specs?.ram || "N/A"} />
                     <SpecItem icon="storage" text={pc.specs?.storage || "N/A"} />
                   </div>
 
-                  <div className="mt-auto flex items-center justify-between pt-6 border-t border-black/5 dark:border-white/5 transition-colors">
+                  <div className="mt-auto flex flex-col md:flex-row md:items-center justify-between pt-3 md:pt-6 border-t border-black/5 dark:border-white/5 transition-colors gap-3 md:gap-0">
                     <div>
-                      <span className="block text-[10px] text-gray-400 dark:text-gray-500 uppercase font-black tracking-widest mb-1">
+                      <span className="block text-[7px] md:text-[10px] text-gray-400 dark:text-gray-500 uppercase font-black tracking-widest mb-0.5 md:mb-1">
                         Starting at
                       </span>
-                      <span className="text-2xl font-black text-gray-900 dark:text-white font-mono transition-colors">
+                      <span className="text-lg md:text-2xl font-black text-gray-900 dark:text-white font-mono transition-colors">
                         ₹{(pc.price || (pc.startingPrice || 0)).toLocaleString()}
                       </span>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 w-full md:w-auto">
                       <button
                         onClick={() => !stockIssue && (onAddToCart ? onAddToCart(pc, true) : onConfigure?.(pc))}
                         disabled={stockIssue}
-                        className={`text-[10px] flex-1 font-black uppercase py-4 px-8 rounded-xl transition-all tracking-widest translate-y-0 active:translate-y-1 ${
+                        className={`text-[7px] md:text-[10px] flex-1 font-black uppercase py-2 md:py-4 px-3 md:px-8 rounded-lg md:rounded-xl transition-all tracking-widest translate-y-0 active:translate-y-1 ${
                           stockIssue
                             ? "bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed"
                             : "bg-gray-900 dark:bg-white text-white dark:text-black hover:bg-primary dark:hover:bg-primary hover:text-white shadow-lg"
                         }`}
                       >
-                        {stockIssue ? "Notify Me" : "Buy Now"}
+                        {stockIssue ? (
+                          <span className="text-[6px] md:text-[10px]">Notify Me</span>
+                        ) : (
+                          "Buy Now"
+                        )}
                       </button>
                       {!stockIssue && onAddToCart && (
                         <button
                           onClick={() => onAddToCart(pc, false)}
-                          className="bg-primary hover:bg-[#6a19b0] text-white py-4 px-4 rounded-xl flex items-center justify-center transition-all shadow-lg active:translate-y-1"
+                          className="bg-primary hover:bg-[#6a19b0] text-white py-2 md:py-4 px-2 md:px-4 rounded-lg md:rounded-xl flex items-center justify-center transition-all shadow-lg active:translate-y-1"
                           title="Add to Cart"
                         >
-                          <span className="material-symbols-outlined text-base">shopping_cart</span>
+                          <span className="material-symbols-outlined text-[14px] md:text-base">shopping_cart</span>
                         </button>
                       )}
                     </div>

@@ -47,11 +47,11 @@ const AccessoriesPage = ({ onAddToCart, accessories = [] }) => {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
           {filteredAccessories.map((item) => (
             <div
               key={item.id}
-              className="bg-white dark:bg-surface-dark border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden group hover:border-primary transition-all shadow-light-card dark:shadow-xl hover:shadow-glow/20"
+              className="bg-white dark:bg-surface-dark border border-black/5 dark:border-white/5 rounded-xl md:rounded-2xl overflow-hidden group hover:border-primary transition-all shadow-light-card dark:shadow-xl hover:shadow-glow/20"
             >
               <div className="aspect-square overflow-hidden relative bg-gray-100 dark:bg-black/20 transition-colors">
                 <img
@@ -59,41 +59,41 @@ const AccessoriesPage = ({ onAddToCart, accessories = [] }) => {
                   alt={item.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-                <div className="absolute top-4 left-4 flex gap-2">
+                <div className="absolute top-2 left-2 md:top-4 md:left-4 flex flex-wrap gap-1 md:gap-2">
                   {(item.tags || []).map((tag) => (
                     <span
                       key={tag}
-                      className="bg-white/80 dark:bg-black/80 backdrop-blur text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded text-gray-900 dark:text-white border border-black/5 dark:border-white/10"
+                      className="bg-white/80 dark:bg-black/80 backdrop-blur text-[7px] md:text-[10px] font-black uppercase tracking-widest px-1.5 md:px-2 py-0.5 md:py-1 rounded text-gray-900 dark:text-white border border-black/5 dark:border-white/10"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
               </div>
-              <div className="p-6">
-                <span className="text-primary text-[10px] font-black uppercase tracking-widest">
+              <div className="p-3 md:p-6">
+                <span className="text-primary text-[7px] md:text-[10px] font-black uppercase tracking-widest">
                   {item.category}
                 </span>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-1 mb-4 truncate transition-colors">
+                <h3 className="text-sm md:text-lg font-bold text-gray-900 dark:text-white mt-0.5 md:mt-1 mb-2 md:mb-4 truncate transition-colors">
                   {item.name}
                 </h3>
-                <div className="flex flex-col gap-4 mt-2">
-                  <span className="text-2xl font-black text-gray-900 dark:text-white font-mono transition-colors">
+                <div className="flex flex-col gap-3 md:gap-4 mt-1 md:mt-2">
+                  <span className="text-lg md:text-2xl font-black text-gray-900 dark:text-white font-mono transition-colors">
                     ₹{(item.price || 0).toLocaleString()}
                   </span>
                   <div className="flex gap-2 w-full">
                     <button
                       onClick={() => handleAdd(item, true)}
-                      className="text-[10px] flex-1 font-black uppercase py-4 px-4 rounded-xl transition-all tracking-widest translate-y-0 active:translate-y-1 bg-gray-900 dark:bg-white text-white dark:text-black hover:bg-primary dark:hover:bg-primary hover:text-white shadow-lg"
+                      className="text-[7px] md:text-[10px] flex-1 font-black uppercase py-2 md:py-4 px-2 md:px-4 rounded-lg md:rounded-xl transition-all tracking-widest translate-y-0 active:translate-y-1 bg-gray-900 dark:bg-white text-white dark:text-black hover:bg-primary dark:hover:bg-primary hover:text-white shadow-lg"
                     >
                       Buy Now
                     </button>
                     <button
                       onClick={() => handleAdd(item, false)}
-                      className="bg-primary hover:bg-[#6a19b0] text-white py-4 px-4 rounded-xl flex items-center justify-center transition-all shadow-lg active:translate-y-1"
+                      className="bg-primary hover:bg-[#6a19b0] text-white py-2 md:py-4 px-2 md:px-4 rounded-lg md:rounded-xl flex items-center justify-center transition-all shadow-lg active:translate-y-1"
                       title="Add to Cart"
                     >
-                      <span className="material-symbols-outlined text-base">shopping_cart</span>
+                      <span className="material-symbols-outlined text-[14px] md:text-base">shopping_cart</span>
                     </button>
                   </div>
                 </div>

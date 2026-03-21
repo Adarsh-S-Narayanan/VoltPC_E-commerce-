@@ -473,7 +473,7 @@ const App = () => {
           <main className="pt-20">
             <section 
               onMouseMove={handleMouseMove}
-              className="relative flex flex-col items-center justify-center py-24 lg:py-36 px-6 overflow-hidden group"
+              className="relative flex flex-col items-center justify-center py-16 md:py-24 lg:py-36 px-4 md:px-6 overflow-hidden group"
             >
               {/* Dynamic Hover Background Effect */}
               <div
@@ -498,7 +498,7 @@ const App = () => {
                   System Online v4.0.2
                 </div>
                 <div ref={textContainerRef} className="relative">
-                  <h1 className="text-6xl md:text-8xl lg:text-[120px] font-black text-gray-900 dark:text-white leading-[0.9] tracking-tighter drop-shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
+                  <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[120px] font-black text-gray-900 dark:text-white leading-[0.9] tracking-tighter drop-shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
                     ENGINEER <br className="hidden md:block" />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary to-gray-400">
                       POWER
@@ -507,7 +507,7 @@ const App = () => {
                   {/* Overlay text that appears where shadow overlaps */}
                   <h1
                     aria-hidden="true"
-                    className="absolute top-0 left-0 right-0 text-6xl md:text-8xl lg:text-[120px] font-black leading-[0.9] tracking-tighter pointer-events-none select-none"
+                    className="absolute top-0 left-0 right-0 text-5xl sm:text-7xl md:text-8xl lg:text-[120px] font-black leading-[0.9] tracking-tighter pointer-events-none select-none"
                     style={{
                       color: 'rgba(123, 29, 205, 1)',
                       WebkitMaskImage: `radial-gradient(350px circle at ${textMousePos.x}px ${textMousePos.y}px, black 0%, black 35%, transparent 70%)`,
@@ -518,7 +518,7 @@ const App = () => {
                     <span className="text-primary">POWER</span>
                   </h1>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 text-lg md:text-2xl max-w-2xl mx-auto font-light leading-relaxed animate-in fade-in duration-1000 delay-300">
+                <p className="text-gray-600 dark:text-gray-400 text-lg md:text-2xl max-w-2xl mx-auto font-light leading-relaxed animate-in fade-in duration-1000 delay-300 px-4 md:px-0">
                   Precision-tuned workstations and high-octane gaming rigs.{" "}
                   <br className="hidden md:block" />
                   Built for the relentless. Driven by data.
