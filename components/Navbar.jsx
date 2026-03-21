@@ -7,6 +7,7 @@ const Navbar = ({
   onNavigateAccessories,
   onNavigateSupport,
   onNavigateReviews,
+  onNavigateAbout,
   onNavigateCart,
   onNavigateAccount,
   cartCount = 0,
@@ -16,7 +17,7 @@ const Navbar = ({
   onNavigateAdmin,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const isAdmin = user?.email === "admin@voltpc.com";
+  const isAdmin = user?.email === "vaultpcgo@gmail.com";
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
       <div className="relative z-50 border-b border-black/5 dark:border-[#312938] glass-nav h-20">
@@ -39,6 +40,7 @@ const Navbar = ({
           <NavButton onClick={onNavigateAccessories} label="Accessories" />
           <NavButton onClick={onNavigateSupport} label="Support" />
           <NavButton onClick={onNavigateReviews} label="Reviews" />
+          <NavButton onClick={onNavigateAbout} label="About" />
           {isAdmin && <NavButton onClick={onNavigateAdmin} label="Admin" />}
         </nav>
 
@@ -185,10 +187,19 @@ const Navbar = ({
               }}
               label="Reviews"
             />
+            <MobileNavButton
+              isOpen={isMenuOpen}
+              index={6}
+              onClick={() => {
+                onNavigateAbout();
+                setIsMenuOpen(false);
+              }}
+              label="About"
+            />
             {isAdmin && (
               <MobileNavButton
                 isOpen={isMenuOpen}
-                index={6}
+                index={7}
                 onClick={() => {
                   onNavigateAdmin();
                   setIsMenuOpen(false);

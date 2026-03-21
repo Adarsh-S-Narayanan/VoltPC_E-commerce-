@@ -15,9 +15,6 @@
     <script>
         // Shim for process.env to avoid ReferenceErrors in the browser environment
         //npm run dev:all
-        //git add .
-        //git commit -m "Fix reviews and AI chat connection"
-        //git push origin main
         window.process = window.process || { env: {} };
 
         tailwind.config = {
@@ -102,6 +99,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);

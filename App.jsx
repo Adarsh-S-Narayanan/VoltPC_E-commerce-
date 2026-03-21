@@ -14,6 +14,7 @@ import AuthPage from "./pages/AuthPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import CustomerReviews from "./pages/CustomerReviews";
 import AdminPage from "./pages/AdminPage";
+import AboutPage from "./pages/AboutPage";
 // Remove direct data imports to rely on DB
 // import { COMPONENT_DATA, PREBUILTS, ACCESSORIES } from "./data";
 import StatItem from "./components/StatItem";
@@ -133,7 +134,7 @@ const App = () => {
         finalView = "auth";
       }
 
-      if (view === "admin" && user?.email !== "admin@voltpc.com") {
+      if (view === "admin" && user?.email !== "vaultpcgo@gmail.com") {
         finalView = "account";
       }
       
@@ -430,6 +431,8 @@ const App = () => {
             }}
           />
         );
+      case "about":
+        return <AboutPage />;
       case "support":
         return <SupportPage />;
       case "reviews":
@@ -604,6 +607,7 @@ const App = () => {
         onNavigateAccessories={() => navigateTo("accessories")}
         onNavigateSupport={() => navigateTo("support")}
         onNavigateReviews={() => navigateTo("reviews")}
+        onNavigateAbout={() => navigateTo("about")}
         onNavigateCart={() => navigateTo("cart")}
         onNavigateAccount={() => navigateTo("account")}
         onNavigateAdmin={() => navigateTo("admin")}
@@ -674,6 +678,7 @@ const App = () => {
                 links={["About Us", "Customer Reviews", "Sustainability", "Newsroom"]}
                 onClickLink={(l) => {
                   if (l === "Customer Reviews") navigateTo("reviews");
+                  if (l === "About Us") navigateTo("about");
                 }}
               />
               <FooterColumn
