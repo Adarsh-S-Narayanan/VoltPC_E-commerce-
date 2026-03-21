@@ -10,20 +10,16 @@ const CustomerReviews = () => {
     loadReviews();
   }, []);
 
-  const loadReviews = () => {
+  const loadReviews = async () => {
     setIsLoading(true);
-    $.ajax({
-      url: 'http://localhost:5000/api/reviews',
-      method: 'GET',
-      success: (data) => {
-        setReviews(data);
-        setIsLoading(false);
-      },
-      error: (err) => {
-        console.error("Failed to load reviews:", err);
-        setIsLoading(false);
-      }
-    });
+    try {
+      const data = await api.fetchReviews();
+      setReviews(data);
+    } catch (err) {
+      console.error("Failed to load reviews:", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -101,7 +97,7 @@ const CustomerReviews = () => {
     });
 
     // Form Submission Logic
-    $('#review-form').off('submit').on('submit', function(e) {
+    $('#review-form').off('submit').on('submit', async function(e) {
       e.preventDefault();
       
       const formData = new FormData(this);
@@ -121,21 +117,15 @@ const CustomerReviews = () => {
       // Animation for transmission
       submitBtn.prop('disabled', true).text('TRANSMITTING...');
       
-      $.ajax({
-        url: 'http://localhost:5000/api/reviews',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(reviewData),
-        success: (response) => {
-          $('#success-overlay').fadeIn(400);
-          submitBtn.prop('disabled', false).text(originalText);
-          loadReviews(); // Reload to show new review
-        },
-        error: (err) => {
-          alert("Submission failed.");
-          submitBtn.prop('disabled', false).text(originalText);
-        }
-      });
+      try {
+        await api.createReview(reviewData);
+        $('#success-overlay').fadeIn(400);
+        submitBtn.prop('disabled', false).text(originalText);
+        loadReviews(); // Reload to show new review
+      } catch (err) {
+        alert("Submission failed.");
+        submitBtn.prop('disabled', false).text(originalText);
+      }
     });
 
     // Reset Form
