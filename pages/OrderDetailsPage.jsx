@@ -1,13 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import * as api from "../services/apiService";
 
-const OrderDetailsPage = ({ order, onBack }) => {
+const OrderDetailsPage = ({ order: initialOrder, onBack }) => {
+  const [order, setOrder] = useState(initialOrder);
   const [chatInput, setChatInput] = useState("");
+  
+  // Default builder if none exists in order
+  const builder = order.builder || {
+    name: "Cortex_Prime",
+    specialty: "Neural Integration",
+    avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=200"
+  };
+
   const [messages, setMessages] = useState([
     {
       role: "builder",
-      text: `Greetings. I'm ${order.builder.name}. I've just finished the initial thermal paste application and I'm moving onto cable management. Any specific lighting preferences for the RGB controller?`,
+      text: `Greetings. I'm ${builder.name}. I've just finished the initial thermal paste application and I'm moving onto cable management. Any specific lighting preferences for the RGB controller?`,
     },
   ]);
+
+  // Polling for status updates
+  useEffect(() => {
+    const pollInterval = setInterval(async () => {
+      try {
+        const idToFetch = order.orderId || order._id || order.id;
+        if (!idToFetch) return;
+        
+        const updatedOrder = await api.fetchOrder(idToFetch);
+        if (updatedOrder && updatedOrder.status !== order.status) {
+          setOrder(prev => ({ ...prev, status: updatedOrder.status }));
+        }
+      } catch (err) {
+        console.error("Polling error:", err);
+      }
+    }, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(pollInterval);
+  }, [order.orderId, order._id, order.id, order.status]);
 
   const handleSendMessage = () => {
     if (!chatInput.trim()) return;
@@ -20,8 +49,7 @@ const OrderDetailsPage = ({ order, onBack }) => {
     "Assembling",
     "Testing",
     "QA Pass",
-    "Shipped",
-    "Delivered",
+    "Ready to pick up",
   ];
   const currentStatusIndex = statusSteps.indexOf(order.status);
 
@@ -167,17 +195,17 @@ const OrderDetailsPage = ({ order, onBack }) => {
               <div className="flex items-center gap-4">
                 <div className="size-14 rounded-2xl overflow-hidden border-2 border-primary/30 shadow-glow">
                   <img
-                    src={order.builder.avatar}
+                    src={builder.avatar}
                     className="w-full h-full object-cover"
-                    alt={order.builder.name}
+                    alt={builder.name}
                   />
                 </div>
                 <div>
                   <h3 className="text-gray-900 dark:text-white font-black uppercase tracking-widest transition-colors">
-                    {order.builder.name}
+                    {builder.name}
                   </h3>
                   <p className="text-primary text-[10px] font-bold uppercase">
-                    {order.builder.specialty}
+                    {builder.specialty}
                   </p>
                   <div className="flex items-center gap-1.5 mt-1">
                     <div className="size-1.5 rounded-full bg-green-500 animate-pulse"></div>

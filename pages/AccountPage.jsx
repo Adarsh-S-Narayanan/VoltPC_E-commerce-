@@ -3,7 +3,7 @@ import { auth } from "../services/firebaseConfig";
 import { sendPasswordResetEmail } from "firebase/auth";
 import * as api from "../services/apiService";
 
-const AccountPage = ({ user, orders, onLogout, onViewOrder }) => {
+const AccountPage = ({ user, orders, onLogout, onViewOrder, onNavigate }) => {
   const [resetStatus, setResetStatus] = useState(""); // "", "loading", "sent", "error"
   const [errorMessage, setErrorMessage] = useState("");
   
@@ -221,7 +221,11 @@ const AccountPage = ({ user, orders, onLogout, onViewOrder }) => {
               Support Access
             </h2>
             <div className="space-y-3">
-              <SupportButton icon="inventory_2" label="Driver Repository" />
+              <SupportButton 
+                icon="inventory_2" 
+                label="Driver Repository" 
+                onClick={() => onNavigate("drivers")}
+              />
               <SupportButton icon="monitoring" label="Live Diagnostics" />
               <SupportButton icon="description" label="Service Tickets" />
             </div>
@@ -278,8 +282,11 @@ const StatusCard = ({ label, value, color }) => (
   </div>
 );
 
-const SupportButton = ({ icon, label }) => (
-  <button className="w-full bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 hover:border-primary hover:text-primary p-4 rounded-xl text-gray-900 dark:text-white font-black uppercase tracking-widest text-[10px] transition-all flex items-center gap-3 shadow-sm dark:shadow-none">
+const SupportButton = ({ icon, label, onClick }) => (
+  <button 
+    onClick={onClick}
+    className="w-full bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 hover:border-primary hover:text-primary p-4 rounded-xl text-gray-900 dark:text-white font-black uppercase tracking-widest text-[10px] transition-all flex items-center gap-3 shadow-sm dark:shadow-none"
+  >
     <span className="material-symbols-outlined text-sm">{icon}</span>
     {label}
   </button>

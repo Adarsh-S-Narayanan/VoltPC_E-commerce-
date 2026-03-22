@@ -15,6 +15,8 @@ import OrderDetailsPage from "./pages/OrderDetailsPage";
 import CustomerReviews from "./pages/CustomerReviews";
 import AdminPage from "./pages/AdminPage";
 import AboutPage from "./pages/AboutPage";
+import DriversPage from "./pages/DriversPage";
+import TroubleshootGuide from "./pages/TroubleshootGuide";
 // Remove direct data imports to rely on DB
 // import { COMPONENT_DATA, PREBUILTS, ACCESSORIES } from "./data";
 import StatItem from "./components/StatItem";
@@ -73,16 +75,7 @@ const App = () => {
     }
     return "dark";
   });
-  const [orders, setOrders] = useState([
-    {
-      id: "VPC-9921-X",
-      date: "MAR 02, 2024",
-      status: "Shipped",
-      total: 284999,
-      items: [],
-      builder: BUILDERS[0],
-    },
-  ]);
+  const [orders, setOrders] = useState([]);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [products, setProducts] = useState([]);
   const [isProductsLoading, setIsProductsLoading] = useState(true);
@@ -138,6 +131,13 @@ const App = () => {
         finalView = "account";
       }
       
+      // Refresh orders when going to account or order-details
+      if (user && (finalView === "account" || finalView === "order-details")) {
+        api.fetchOrders(user.email).then(data => {
+          if (data && data.length > 0) setOrders(data);
+        }).catch(err => console.error("Nav refresh failed:", err));
+      }
+      
       setCurrentView(finalView);
       
       if (!isPopState) {
@@ -185,8 +185,16 @@ const App = () => {
           const profile = await api.fetchUserProfile(loggedInUser.uid);
           if (profile && Object.keys(profile).length > 0) {
             if (profile.cart && profile.cart.length > 0) setCartItems(profile.cart);
-            if (profile.orderHistory && profile.orderHistory.length > 0) setOrders(profile.orderHistory);
           }
+          
+          // Fetch live orders (more accurate than embedded history)
+          const liveOrders = await api.fetchOrders(loggedInUser.email);
+          if (liveOrders && liveOrders.length > 0) {
+            setOrders(liveOrders);
+          } else if (profile.orderHistory && profile.orderHistory.length > 0) {
+            setOrders(profile.orderHistory);
+          }
+
           await api.updateUserProfile(loggedInUser.uid, {
             id: loggedInUser.uid,
             name: loggedInUser.username,
@@ -434,7 +442,11 @@ const App = () => {
       case "about":
         return <AboutPage />;
       case "support":
-        return <SupportPage />;
+        return <SupportPage onNavigate={navigateTo} />;
+      case "drivers":
+        return <DriversPage onBack={() => navigateTo("support")} />;
+      case "troubleshoot":
+        return <TroubleshootGuide onBack={() => navigateTo("support")} />;
       case "reviews":
         return <CustomerReviews />;
       case "admin":
@@ -462,6 +474,7 @@ const App = () => {
               setSelectedOrderId(id);
               navigateTo("order-details");
             }}
+            onNavigate={navigateTo}
           />
         );
       case "order-details":

@@ -217,6 +217,39 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
+app.put('/api/orders/:orderId', async (req, res) => {
+  try {
+    const updated = await Order.findOneAndUpdate(
+      { orderId: req.params.orderId },
+      req.body,
+      { returnDocument: 'after' }
+    );
+    res.json(updated);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+app.get('/api/orders/:orderId', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    let order = null;
+    
+    // Attempt search by custom orderId string first (e.g., VPC-1234-A)
+    order = await Order.findOne({ orderId: orderId });
+    
+    // If not found and looks like a MongoDB ObjectId, try findById
+    if (!order && mongoose.Types.ObjectId.isValid(orderId)) {
+      order = await Order.findById(orderId);
+    }
+
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // --- UroPay Payment Routes ---
 
 const UROPAY_API_URL = 'https://api.uropay.me';
@@ -355,7 +388,9 @@ app.patch('/api/payments/verify', async (req, res) => {
 
 app.get('/api/orders', async (req, res) => {
   try {
-    const orders = await Order.find();
+    const { email } = req.query;
+    const query = email ? { email } : {};
+    const orders = await Order.find(query);
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });

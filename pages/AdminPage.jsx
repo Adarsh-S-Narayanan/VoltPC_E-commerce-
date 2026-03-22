@@ -183,6 +183,15 @@ const AdminPage = ({ onRefresh }) => {
     };
   }, [products]);
 
+  const handleUpdateStatus = async (orderId, newStatus) => {
+    try {
+      await api.updateOrder(orderId, { status: newStatus });
+      setOrders(orders.map(o => o.orderId === orderId ? { ...o, status: newStatus } : o));
+    } catch (err) {
+      alert("Status update failed");
+    }
+  };
+
   return (
     <div className="pt-24 min-h-screen bg-[#f8f9fa] dark:bg-[#0a0a0c] px-6 pb-20 transition-colors duration-500">
       <div className="max-w-[1440px] mx-auto">
@@ -195,13 +204,13 @@ const AdminPage = ({ onRefresh }) => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              Neural Command v4.0 (No-Local)
+              Neural Command v4.5 (Active Checklist)
             </div>
             <h1 className="text-5xl font-black text-gray-900 dark:text-white tracking-tighter uppercase leading-none flex items-center gap-6">
               {viewMode === 'inventory' ? (
                 <>Inventory <span className="text-primary">Matrix</span></>
               ) : (
-                <>Order <span className="text-primary">Command</span></>
+                <>Order <span className="text-primary">Console</span></>
               )}
             </h1>
             <p className="text-gray-500 font-medium font-display uppercase tracking-widest text-[10px] opacity-60">Global Cluster Authorization Required.</p>
@@ -336,7 +345,7 @@ const AdminPage = ({ onRefresh }) => {
             )}
           </>
         ) : (
-          <OrdersView orders={orders} isLoading={isLoadingOrders} />
+          <OrdersView orders={orders} isLoading={isLoadingOrders} onUpdateStatus={handleUpdateStatus} />
         )}
       </div>
 
@@ -632,7 +641,7 @@ const ProductCard = ({ product, saving, onDelete, onSave, updateLocalProduct }) 
   );
 };
 
-const OrdersView = ({ orders, isLoading }) => {
+const OrdersView = ({ orders, isLoading, onUpdateStatus }) => {
   if (isLoading) {
     return (
       <div className="py-24 flex flex-col items-center gap-6">
@@ -661,19 +670,39 @@ const OrdersView = ({ orders, isLoading }) => {
         <div key={order._id || order.orderId} className="bg-white dark:bg-surface-dark border border-black/5 dark:border-white/5 rounded-[32px] p-6 shadow-xl transition-colors">
           <div className="flex flex-col lg:flex-row justify-between gap-6 border-b border-black/5 dark:border-white/5 pb-6">
             <div className="space-y-1">
-              <span className="text-[9px] font-black text-primary uppercase tracking-widest">Order Reference</span>
+              <span className="text-[9px] font-black text-primary uppercase tracking-widest">VPC Reference ID</span>
               <p className="font-mono text-sm text-gray-900 dark:text-white">{order.orderId || order._id}</p>
             </div>
             <div className="space-y-1 lg:text-right">
               <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Timestamp</span>
               <p className="font-mono text-sm text-gray-900 dark:text-white">{new Date(order.date).toLocaleString()}</p>
             </div>
-            <div className="space-y-1 lg:text-right">
-              <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Status</span>
-              <div>
-                <span className={`px-3 py-1 text-[10px] font-black uppercase rounded-full shadow-sm ${order.status === 'Completed' ? 'bg-green-50 text-green-600 dark:bg-green-500/10' : order.status === 'Pending' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10' : 'bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300'}`}>
-                  {order.status || 'Pending'}
-                </span>
+            <div className="space-y-4 lg:text-right">
+              <div className="flex flex-col lg:items-end gap-1">
+                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Global Status Matrix</span>
+                <span className="px-2.5 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase rounded-full border border-primary/20 w-fit">Current: {order.status || 'Validated'}</span>
+              </div>
+              <div className="flex flex-wrap lg:justify-end gap-2">
+                {["Validated", "Assembling", "Testing", "QA Pass", "Ready to pick up"].map((step) => {
+                  const isCompleted = ["Validated", "Assembling", "Testing", "QA Pass", "Ready to pick up"].indexOf(step) <= ["Validated", "Assembling", "Testing", "QA Pass", "Ready to pick up"].indexOf(order.status);
+                  const isCurrent = order.status === step;
+                  
+                  return (
+                    <button
+                      key={step}
+                      onClick={() => onUpdateStatus(order.orderId, step)}
+                      className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter transition-all border ${
+                        isCurrent 
+                          ? "bg-primary text-white border-primary shadow-glow" 
+                          : isCompleted 
+                            ? "bg-green-500/10 text-green-500 border-green-500/20" 
+                            : "bg-gray-100 dark:bg-white/5 text-gray-400 border-black/5 dark:border-white/5 hover:border-primary/50"
+                      }`}
+                    >
+                      {step}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

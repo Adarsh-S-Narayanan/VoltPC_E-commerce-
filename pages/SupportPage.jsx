@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PageHeader from "../components/PageHeader";
 import InputField from "../components/InputField";
 
-const SupportPage = () => {
+const SupportPage = ({ onNavigate }) => {
   const [formState, setFormState] = useState("idle");
 
   const handleSubmit = (e) => {
@@ -24,12 +24,14 @@ const SupportPage = () => {
             icon="auto_repair"
             title="Troubleshooting"
             desc="Exhaustive guides for thermal optimization, BIOS tuning, and driver stability."
+            onClick={() => onNavigate("troubleshoot")}
           />
 
           <SupportCard
             icon="download"
             title="Driver Cloud"
             desc="Access the latest firmware and utility software specifically tuned for your build serial."
+            onClick={() => onNavigate("drivers")}
           />
 
           <SupportCard
@@ -110,8 +112,11 @@ const SupportPage = () => {
   );
 };
 
-const SupportCard = ({ icon, title, desc }) => (
-  <div className="bg-white dark:bg-surface-dark border border-black/5 dark:border-white/5 p-8 rounded-2xl hover:border-primary shadow-light-card dark:shadow-none transition-all group">
+const SupportCard = ({ icon, title, desc, onClick }) => (
+  <div 
+    onClick={onClick}
+    className="bg-white dark:bg-surface-dark border border-black/5 dark:border-white/5 p-8 rounded-2xl hover:border-primary shadow-light-card dark:shadow-none transition-all group cursor-pointer"
+  >
     <span className="material-symbols-outlined text-4xl text-primary mb-6 group-hover:scale-110 transition-transform inline-block">
       {icon}
     </span>
