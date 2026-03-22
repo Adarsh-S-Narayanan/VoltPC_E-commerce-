@@ -618,7 +618,7 @@ const App = () => {
       />
 
       {isProductsLoading ? (
-        <div className="flex-1 flex flex-col items-center justify-center bg-background-light dark:bg-background-dark">
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background-light dark:bg-background-dark">
           <div className="relative size-24 mb-8">
             <div className="absolute inset-0 border-t-2 border-primary rounded-full animate-spin"></div>
             <div className="absolute inset-2 border-t-2 border-primary/30 rounded-full animate-spin [animation-duration:3s]"></div>
