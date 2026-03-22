@@ -134,7 +134,14 @@ const App = () => {
       // Refresh orders when going to account or order-details
       if (user && (finalView === "account" || finalView === "order-details")) {
         api.fetchOrders(user.email).then(data => {
-          if (data && data.length > 0) setOrders(data);
+          if (data && data.length > 0) {
+            setOrders(prev => {
+              // Merge: start with new data, then add unique orders from prev
+              const existingIds = new Set(data.map(o => o.orderId || o.id));
+              const uniqueFromPrev = prev.filter(o => !existingIds.has(o.orderId || o.id));
+              return [...data, ...uniqueFromPrev];
+            });
+          }
         }).catch(err => console.error("Nav refresh failed:", err));
       }
       
@@ -478,13 +485,22 @@ const App = () => {
           />
         );
       case "order-details":
-        const selectedOrder = orders.find((o) => o.id === selectedOrderId);
+        // Try to find in orders array, fallback to a local ref if we just created it
+        const selectedOrder = orders.find((o) => o.id === selectedOrderId || o.orderId === selectedOrderId);
+        
         return selectedOrder ? (
           <OrderDetailsPage
             order={selectedOrder}
             onBack={() => navigateTo("account")}
           />
-        ) : null;
+        ) : (
+          <div className="pt-32 flex flex-col items-center justify-center min-h-[60vh]">
+            <div className="size-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+            <p className="mt-6 text-gray-500 uppercase font-black tracking-widest text-xs animate-pulse">
+              Locating Order Transmission...
+            </p>
+          </div>
+        );
       default:
         return (
           <main className="pt-20">
