@@ -167,8 +167,8 @@ const AuthPage = ({ onAuthComplete, onBack, initialMode = "signin" }) => {
             <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Back</span>
           </button>
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-primary/10 border border-primary/20 text-primary mb-6 transition-all">
-              <span className="material-symbols-outlined text-4xl">bolt</span>
+            <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-primary/10 border border-primary/20 text-primary mb-6 transition-all p-2">
+              <img src="/logo.png" alt="VoltPC Logo" className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(123,29,205,0.8)]" />
             </div>
             <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase mb-2 transition-colors">
               {mode === "signin" ? "Link System" : "Create Identity"}

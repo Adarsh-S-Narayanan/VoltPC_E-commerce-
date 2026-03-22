@@ -23,18 +23,20 @@ const Navbar = ({
       <div className="relative z-50 border-b border-black/5 dark:border-[#312938] glass-nav h-20">
         <div className="max-w-[1440px] mx-auto px-6 h-full flex items-center justify-between">
         <div
-          className="flex items-center gap-2 group cursor-pointer"
+          className="flex items-center gap-2 group cursor-pointer shrink-0"
           onClick={onNavigateHome}
         >
-          <span className="material-symbols-outlined text-primary text-3xl group-hover:drop-shadow-[0_0_8px_rgba(123,29,205,0.8)] transition-all duration-300">
-            bolt
-          </span>
+          <img 
+            src="/logo.png" 
+            alt="VoltPC Logo" 
+            className="h-10 w-auto group-hover:drop-shadow-[0_0_8px_rgba(123,29,205,0.8)] transition-all duration-300"
+          />
           <h2 className="text-gray-900 dark:text-white text-2xl font-bold tracking-widest uppercase transition-all duration-300 group-hover:text-primary">
             VoltPC
           </h2>
         </div>
 
-        <nav className="hidden md:flex items-center gap-10">
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
           <NavButton onClick={onNavigateLab} label="Build Lab" />
           <NavButton onClick={onNavigatePrebuilds} label="Pre-builds" />
           <NavButton onClick={onNavigateAccessories} label="Accessories" />
@@ -74,7 +76,7 @@ const Navbar = ({
           {user && (
             <button
               onClick={onNavigateAccount}
-              className="sm:hidden relative flex items-center justify-center w-9 h-9 rounded-full ring-2 ring-primary/40 hover:ring-primary transition-all duration-300 overflow-hidden bg-primary/10 shrink-0"
+              className="lg:hidden relative flex items-center justify-center w-9 h-9 rounded-full ring-2 ring-primary/40 hover:ring-primary transition-all duration-300 overflow-hidden bg-primary/10 shrink-0"
               title={user.username}
             >
               {user.photoURL ? (
@@ -94,7 +96,7 @@ const Navbar = ({
 
           <button
             onClick={onNavigateAccount}
-            className={`hidden sm:flex items-center gap-2 border border-black/10 dark:border-[#312938] hover:border-primary text-gray-900 dark:text-white px-4 py-2 rounded-lg transition-all duration-300 ${
+            className={`hidden lg:flex items-center gap-2 border border-black/10 dark:border-[#312938] hover:border-primary text-gray-900 dark:text-white px-4 py-2 rounded-lg transition-all duration-300 shrink-0 ${
               user ? "bg-gray-100 dark:bg-surface-dark" : "bg-primary text-white shadow-glow"
             }`}
           >
@@ -109,7 +111,7 @@ const Navbar = ({
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden relative w-10 h-10 text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center justify-center z-[60]"
+            className="lg:hidden relative w-10 h-10 text-gray-600 dark:text-gray-300 hover:text-primary transition-colors flex items-center justify-center z-[60] shrink-0"
           >
             <div className="w-6 h-5 relative flex flex-col justify-between items-center">
               <span className={`block w-6 h-0.5 bg-current rounded-full transition-all duration-300 ease-in-out transform ${isMenuOpen ? 'rotate-45 translate-y-[9px]' : ''}`}></span>
@@ -121,9 +123,8 @@ const Navbar = ({
       </div>
     </div>
 
-    {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-background-light/98 dark:bg-background-dark/98 backdrop-blur-2xl z-[55] transition-all duration-500 ease-[cubic-bezier(0.16, 1, 0.3, 1)] md:hidden ${
+        className={`fixed inset-0 bg-background-light/98 dark:bg-background-dark/98 backdrop-blur-2xl z-[55] transition-all duration-500 ease-[cubic-bezier(0.16, 1, 0.3, 1)] lg:hidden ${
           isMenuOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-full pointer-events-none"
         }`}
       >
@@ -229,7 +230,7 @@ const Navbar = ({
         {/* Top-level Back button */}
         <button
           onClick={() => setIsMenuOpen(false)}
-          className={`absolute top-8 left-8 text-gray-500 hover:text-primary transition-all duration-500 delay-300 md:hidden flex items-center gap-2 group z-[70] ${isMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
+          className={`absolute top-8 left-8 text-gray-500 hover:text-primary transition-all duration-500 delay-300 lg:hidden flex items-center gap-2 group z-[70] ${isMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}
         >
           <span className="material-symbols-outlined text-xl group-hover:-translate-x-1 transition-transform">
             arrow_back
@@ -259,7 +260,7 @@ const MobileNavButton = ({ onClick, label, index, isOpen }) => (
 const NavButton = ({ onClick, label }) => (
   <button
     onClick={onClick}
-    className="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white text-sm font-medium uppercase tracking-wider transition-colors"
+    className="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white text-sm font-medium uppercase tracking-wider transition-colors whitespace-nowrap"
   >
     {label}
   </button>

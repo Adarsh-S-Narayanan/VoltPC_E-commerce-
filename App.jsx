@@ -622,8 +622,8 @@ const App = () => {
           <div className="relative size-24 mb-8">
             <div className="absolute inset-0 border-t-2 border-primary rounded-full animate-spin"></div>
             <div className="absolute inset-2 border-t-2 border-primary/30 rounded-full animate-spin [animation-duration:3s]"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-4xl animate-pulse">bolt</span>
+            <div className="absolute inset-0 flex items-center justify-center p-4">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain animate-pulse drop-shadow-[0_0_8px_rgba(123,29,205,0.8)]" />
             </div>
           </div>
           <div className="text-center space-y-2">
@@ -643,9 +643,7 @@ const App = () => {
                   className="flex items-center gap-2 mb-6 cursor-pointer"
                   onClick={() => navigateTo("landing")}
                 >
-                  <span className="material-symbols-outlined text-primary text-3xl">
-                    bolt
-                  </span>
+                  <img src="/logo.png" alt="VoltPC Logo" className="h-10 w-auto" />
                   <span className="text-gray-900 dark:text-white text-2xl font-black tracking-widest uppercase">
                     VoltPC
                   </span>

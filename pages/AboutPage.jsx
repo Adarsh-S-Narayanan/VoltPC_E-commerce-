@@ -114,7 +114,7 @@ const DarkMap = () => {
               box-shadow:0 0 20px rgba(123,29,205,0.6),0 0 40px rgba(123,29,205,0.3);
               animation:ping 2s cubic-bezier(0,0,0.2,1) infinite;
             ">
-              <span class="material-symbols-outlined" style="color:#7b1dcd;font-size:22px;">bolt</span>
+              <img src="/logo.png" style="width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(123,29,205,0.8));" />
             </div>
             <div style="
               position:absolute;
@@ -149,7 +149,7 @@ const DarkMap = () => {
             box-shadow:0 0 24px rgba(123,29,205,0.3);
           ">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-              <span class="material-symbols-outlined" style="color:#7b1dcd;font-size:20px;">bolt</span>
+              <img src="/logo.png" style="width:20px;height:20px;object-fit:contain;" />
               <span style="font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:0.1em;">VoltPC Engineering</span>
             </div>
             <div style="color:#a78bfa;font-size:12px;line-height:1.6;">
