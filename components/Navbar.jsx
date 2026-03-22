@@ -29,7 +29,7 @@ const Navbar = ({
           <img 
             src="/logo.png" 
             alt="VoltPC Logo" 
-            className="h-10 w-auto group-hover:drop-shadow-[0_0_8px_rgba(123,29,205,0.8)] transition-all duration-300"
+            className="h-14 w-auto scale-125 group-hover:drop-shadow-[0_0_8px_rgba(123,29,205,0.8)] transition-all duration-300"
           />
           <h2 className="text-gray-900 dark:text-white text-2xl font-bold tracking-widest uppercase transition-all duration-300 group-hover:text-primary">
             VoltPC

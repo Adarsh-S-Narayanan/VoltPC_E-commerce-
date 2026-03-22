@@ -643,7 +643,7 @@ const App = () => {
                   className="flex items-center gap-2 mb-6 cursor-pointer"
                   onClick={() => navigateTo("landing")}
                 >
-                  <img src="/logo.png" alt="VoltPC Logo" className="h-10 w-auto" />
+                  <img src="/logo.png" alt="VoltPC Logo" className="h-14 w-auto scale-125" />
                   <span className="text-gray-900 dark:text-white text-2xl font-black tracking-widest uppercase">
                     VoltPC
                   </span>
