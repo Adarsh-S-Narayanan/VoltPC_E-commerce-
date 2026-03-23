@@ -50,6 +50,11 @@ const orderSchema = new mongoose.Schema({
   items: Array,
   uroPayOrderId: String,
   referenceNumber: String,
+  messages: [{
+    sender: { type: String, enum: ['customer', 'builder'] },
+    text: String,
+    timestamp: { type: Date, default: Date.now }
+  }],
   date: { type: Date, default: Date.now }
 });
 

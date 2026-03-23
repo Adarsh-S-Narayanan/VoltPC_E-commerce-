@@ -25,78 +25,120 @@ const CustomerReviews = () => {
   useEffect(() => {
     if (reviews.length === 0) return;
 
-    // Initial animation for cards using jQuery
-    $('.review-card').css({ opacity: 0, transform: 'translateY(20px)' });
+    /* 
+     ==========================================================================
+     🚀 JQUERY ANIMATION ENGINE: THE PULSE OF PERFECTION
+     ==========================================================================
+     How it works:
+     1. Entrance: Staggered "Quantum Materialization" effect (Fade + Slide)
+     2. Interaction: "Dynamic Vector Tilt" (3D response to cursor position)
+     3. State Management: Clean event unbinding to prevent memory leaks
+     ==========================================================================
+    */
+
+    // --- 🟢 PHASE 1: INITIAL QUANTUM MATERIALIZATION ---
+    // We set initial state to hidden and translated, then stagger the appearance
+    $('.review-card').css({ opacity: 0, transform: 'translateY(30px) scale(0.95)' });
     
     $('.review-card').each(function(index) {
-        $(this).delay(100 * index).animate({
-            opacity: 1,
-            top: 0
+        $(this).delay(150 * index).animate({
+            opacity: 1
         }, {
+            duration: 1000,
+            easing: 'swing',
             step: function(now, fx) {
+                // Manually calculating the 3D-like slide up during the opacity animation
                 if (fx.prop === 'opacity') {
-                    $(this).css('transform', `translateY(${20 * (1 - now)}px)`);
+                    const progress = now; // 0 to 1
+                    const translateY = 30 * (1 - progress);
+                    const scale = 0.95 + (0.05 * progress);
+                    $(this).css('transform', `translateY(${translateY}px) scale(${scale})`);
                 }
-            },
-            duration: 800
+            }
         });
     });
 
-    // Filter logic using jQuery
+    // --- 🔵 PHASE 2: DYNAMIC VECTOR TILT & HOVER EFFECTS ---
+    // Adding a 3D tilt effect that tracks the mouse position relative to the card center
+    $('.review-card').on('mousemove', function(e) {
+        const card = $(this);
+        const cardOffset = card.offset();
+        const cardWidth = card.outerWidth();
+        const cardHeight = card.outerHeight();
+        
+        // Calculate cursor position relative to card center (from -0.5 to 0.5)
+        const mouseX = (e.pageX - cardOffset.left) / cardWidth - 0.5;
+        const mouseY = (e.pageY - cardOffset.top) / cardHeight - 0.5;
+        
+        // Tilt intensity (degrees)
+        const tiltX = mouseY * -15; // Vertical mouse move tilts around X axis
+        const tiltY = mouseX * 15;  // Horizontal mouse move tilts around Y axis
+        
+        // Apply the 3D transformation
+        card.css({
+            'transform': `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`,
+            'box-shadow': `${mouseX * -20}px ${mouseY * -20}px 30px rgba(107, 33, 168, 0.1)`,
+            'z-index': 10
+        });
+        
+        // Subtle parallax for the avatar
+        card.find('.avatar-img').css({
+            'transform': `translateX(${mouseX * 10}px) translateY(${mouseY * 10}px) rotate(${mouseX * 20}deg)`
+        });
+    });
+
+    // Resetting the card state when the mouse leaves
+    $('.review-card').on('mouseleave', function() {
+        $(this).css({
+            'transform': 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+            'box-shadow': 'none',
+            'z-index': 1
+        });
+        $(this).find('.avatar-img').css('transform', 'translateX(0) translateY(0) rotate(0deg)');
+    });
+
+    // --- 🟡 PHASE 3: FILTERING LOGIC ---
+    // jQuery handles the UI logic for filtering without re-rendering the whole page
     $('.filter-btn').off('click').on('click', function() {
       const rating = $(this).attr('data-rating');
       
-      // Update buttons
+      // Visual feedback for filter buttons
       $('.filter-btn').removeClass('bg-primary text-white shadow-glow').addClass('bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300');
       $(this).removeClass('bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300').addClass('bg-primary text-white shadow-glow');
 
       if (rating === 'all') {
-        $('.review-card').fadeIn(400);
+        $('.review-card').stop().fadeIn(600);
       } else {
-        $('.review-card').hide();
-        $(`.review-card[data-rating="${rating}"]`).fadeIn(400);
+        $('.review-card').stop().hide(); // Hidden instantly to allow clean fadeIn
+        $(`.review-card[data-rating="${rating}"]`).stop().fadeIn(600);
       }
     });
 
-    // Hover effect using jQuery
-    $('.review-card').off('mouseenter mouseleave').on('mouseenter', function() {
-        $(this).find('.avatar-img').css('transform', 'scale(1.1) rotate(5deg)');
-    }).on('mouseleave', function() {
-        $(this).find('.avatar-img').css('transform', 'scale(1) rotate(0deg)');
-    });
-
-    // Star Rating Logic
+    // --- 🟠 PHASE 4: INTERACTIVE STAR RATING ---
+    // Hover and Click logic for the submission form
     $('.star-btn').off('mouseenter mouseleave click').on('mouseenter', function() {
       const val = $(this).data('value');
       $('.star-btn').each(function() {
-        if ($(this).data('value') <= val) {
-          $(this).addClass('text-yellow-400').removeClass('text-gray-300 dark:text-gray-700');
-        } else {
-          $(this).removeClass('text-yellow-400').addClass('text-gray-300 dark:text-gray-700');
-        }
+        $(this).toggleClass('text-yellow-400', $(this).data('value') <= val)
+               .toggleClass('text-gray-300 dark:text-gray-700', $(this).data('value') > val);
       });
     }).on('mouseleave', function() {
       const currentRating = $('#rating-input').val();
       $('.star-btn').each(function() {
-        if (currentRating && $(this).data('value') <= currentRating) {
-          $(this).addClass('text-yellow-400').removeClass('text-gray-300 dark:text-gray-700');
-        } else {
-          $(this).removeClass('text-yellow-400').addClass('text-gray-300 dark:text-gray-700');
-        }
+        $(this).toggleClass('text-yellow-400', currentRating && $(this).data('value') <= currentRating)
+               .toggleClass('text-gray-300 dark:text-gray-700', !currentRating || $(this).data('value') > currentRating);
       });
     }).on('click', function() {
       const val = $(this).data('value');
       $('#rating-input').val(val);
-      $('.star-btn').each(function() {
-        if ($(this).data('value') <= val) {
-          $(this).addClass('text-yellow-400').removeClass('text-gray-300 dark:text-gray-700');
-        } else {
-          $(this).removeClass('text-yellow-400').addClass('text-gray-300 dark:text-gray-700');
-        }
+      $(this).parent().find('.star-btn').each(function() {
+        $(this).toggleClass('text-yellow-400', $(this).data('value') <= val)
+               .toggleClass('text-gray-300 dark:text-gray-700', $(this).data('value') > val);
       });
     });
 
-    // Form Submission Logic
+    // --- 🔴 PHASE 5: FORM SUBMISSION ANIMATION ---
+    // Using jQuery to handle the submission state and success feedback
     $('#review-form').off('submit').on('submit', async function(e) {
       e.preventDefault();
       
@@ -114,21 +156,21 @@ const CustomerReviews = () => {
       const submitBtn = $(this).find('button[type="submit"]');
       const originalText = submitBtn.text();
       
-      // Animation for transmission
+      // UI Animation to indicate processing
       submitBtn.prop('disabled', true).text('TRANSMITTING...');
       
       try {
         await api.createReview(reviewData);
         $('#success-overlay').fadeIn(400);
         submitBtn.prop('disabled', false).text(originalText);
-        loadReviews(); // Reload to show new review
+        loadReviews(); // Fetch fresh data
       } catch (err) {
-        alert("Submission failed.");
+        console.error("Submission error:", err);
         submitBtn.prop('disabled', false).text(originalText);
       }
     });
 
-    // Reset Form
+    // Reset UI state
     $('#reset-form').off('click').on('click', function() {
       $('#success-overlay').fadeOut(400);
       $('#review-form')[0].reset();
@@ -136,9 +178,11 @@ const CustomerReviews = () => {
       $('.star-btn').removeClass('text-yellow-400').addClass('text-gray-300 dark:text-gray-700');
     });
 
+    // --- 🏁 CLEANUP ---
+    // Ensuring all jQuery-attached events are removed when the component unmounts
     return () => {
+      $('.review-card').off('mousemove mouseleave');
       $('.filter-btn').off('click');
-      $('.review-card').off('mouseenter mouseleave');
       $('.star-btn').off('mouseenter mouseleave click');
       $('#review-form').off('submit');
       $('#reset-form').off('click');

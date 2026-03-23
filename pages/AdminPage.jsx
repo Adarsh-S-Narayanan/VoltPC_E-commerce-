@@ -31,6 +31,8 @@ const AdminPage = ({ onRefresh }) => {
     }
   });
   const [savingId, setSavingId] = useState(null);
+  const [chatOrder, setChatOrder] = useState(null);
+
 
   useEffect(() => {
     loadProducts();
@@ -345,9 +347,25 @@ const AdminPage = ({ onRefresh }) => {
             )}
           </>
         ) : (
-          <OrdersView orders={orders} isLoading={isLoadingOrders} onUpdateStatus={handleUpdateStatus} />
+          <OrdersView 
+            orders={orders} 
+            isLoading={isLoadingOrders} 
+            onUpdateStatus={handleUpdateStatus} 
+            setChatOrder={setChatOrder}
+          />
         )}
       </div>
+
+      {chatOrder && (
+        <ChatModal 
+          order={chatOrder} 
+          onClose={() => setChatOrder(null)} 
+          onUpdateOrder={(updated) => {
+            setOrders(orders.map(o => (o.orderId === updated.orderId || o._id === updated._id) ? updated : o));
+            setChatOrder(updated);
+          }}
+        />
+      )}
 
       {/* Add Item Modal */}
       {showAddModal && (
@@ -519,17 +537,19 @@ const AdminPage = ({ onRefresh }) => {
   );
 };
 
-const StatCard = ({ label, value, icon, color = "text-primary" }) => (
-  <div className="bg-white dark:bg-surface-dark border border-black/5 dark:border-white/5 p-6 rounded-3xl shadow-lg flex-1 min-w-[140px] transition-colors">
-    <div className="flex justify-between items-start mb-4">
-      <span className={`material-symbols-outlined ${color} opacity-40`}>{icon}</span>
+function StatCard({ label, value, icon, color = "text-primary" }) {
+  return (
+    <div className="bg-white dark:bg-surface-dark border border-black/5 dark:border-white/5 p-6 rounded-3xl shadow-lg flex-1 min-w-[140px] transition-colors">
+      <div className="flex justify-between items-start mb-4">
+        <span className={`material-symbols-outlined ${color} opacity-40`}>{icon}</span>
+      </div>
+      <p className="text-2xl font-black text-gray-900 dark:text-white mb-1 uppercase tracking-tight transition-colors">{value}</p>
+      <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{label}</p>
     </div>
-    <p className="text-2xl font-black text-gray-900 dark:text-white mb-1 uppercase tracking-tight transition-colors">{value}</p>
-    <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{label}</p>
-  </div>
-);
+  );
+}
 
-const ProductCard = ({ product, saving, onDelete, onSave, updateLocalProduct }) => {
+function ProductCard({ product, saving, onDelete, onSave, updateLocalProduct }) {
   const isOutOfStock = (product.stock || 0) === 0;
   const isLowStock = !isOutOfStock && (product.stock || 0) < 5;
 
@@ -641,7 +661,7 @@ const ProductCard = ({ product, saving, onDelete, onSave, updateLocalProduct }) 
   );
 };
 
-const OrdersView = ({ orders, isLoading, onUpdateStatus }) => {
+function OrdersView({ orders, isLoading, onUpdateStatus, setChatOrder }) {
   if (isLoading) {
     return (
       <div className="py-24 flex flex-col items-center gap-6">
@@ -671,7 +691,16 @@ const OrdersView = ({ orders, isLoading, onUpdateStatus }) => {
           <div className="flex flex-col lg:flex-row justify-between gap-6 border-b border-black/5 dark:border-white/5 pb-6">
             <div className="space-y-1">
               <span className="text-[9px] font-black text-primary uppercase tracking-widest">VPC Reference ID</span>
-              <p className="font-mono text-sm text-gray-900 dark:text-white">{order.orderId || order._id}</p>
+              <div className="flex items-center gap-3">
+                <p className="font-mono text-sm text-gray-900 dark:text-white">{order.orderId || order._id}</p>
+                <button 
+                  onClick={() => setChatOrder(order)}
+                  className="size-8 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white flex items-center justify-center transition-all border border-primary/20 group"
+                  title="Message Customer"
+                >
+                  <span className="material-symbols-outlined text-sm group-hover:scale-110 transition-transform">forum</span>
+                </button>
+              </div>
             </div>
             <div className="space-y-1 lg:text-right">
               <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Timestamp</span>
@@ -771,3 +800,121 @@ const OrdersView = ({ orders, isLoading, onUpdateStatus }) => {
 };
 
 export default AdminPage;
+
+function ChatModal({ order, onClose, onUpdateOrder }) {
+  const [input, setInput] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const scrollRef = React.useRef(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [order.messages]);
+
+  /* 
+     LIVE COMMUNICATION (AJAX POLLING):
+     This background process continuously fetches fresh data for the specific order
+     every 4 seconds. This ensures the builder sees customer replies instantly.
+     This modern AJAX approach creates a seamless real-time chat experience
+     without needing full page reloads or WebSockets.
+  */
+  useEffect(() => {
+    const poll = setInterval(async () => {
+      try {
+        const id = order.orderId || order._id || order.id;
+        const updated = await api.fetchOrder(id);
+        if (updated) onUpdateOrder(updated);
+      } catch (err) {
+        console.error("Admin AJAX Chat poll error:", err);
+      }
+    }, 4000);
+    return () => clearInterval(poll);
+  }, [order.orderId, order._id, order.id]);
+
+  const handleSend = async () => {
+    if (!input.trim() || isSending) return;
+    setIsSending(true);
+    try {
+      const id = order.orderId || order._id || order.id;
+      const updated = await api.addOrderMessage(id, {
+        sender: "builder",
+        text: input.trim()
+      });
+      if (updated) {
+        onUpdateOrder(updated);
+        setInput("");
+      }
+    } catch (err) {
+      console.error("Admin send error:", err);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose}></div>
+      <div className="relative bg-white dark:bg-surface-dark w-full max-w-xl h-[600px] rounded-[40px] border border-black/5 dark:border-white/10 shadow-3xl flex flex-col overflow-hidden transition-colors">
+        <div className="p-6 border-b border-black/5 dark:border-white/5 bg-gradient-to-r from-primary/5 to-transparent flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="size-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-glow">
+              <span className="material-symbols-outlined text-xl">engineering</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tighter">Builder Chat</h3>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Order: {order.orderId || order._id}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="size-10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 flex items-center justify-center text-gray-400 transition-all">
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50 dark:bg-black/20 custom-scrollbar">
+          {(Array.isArray(order.messages) ? order.messages : []).length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
+              <span className="material-symbols-outlined text-4xl mb-2">chat_bubble</span>
+              <p className="text-[10px] font-black uppercase tracking-widest">No transmissions recorded</p>
+            </div>
+          ) : (
+            (Array.isArray(order.messages) ? order.messages : []).map((m, i) => (
+              <div key={i} className={`flex ${m.sender === "builder" ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[80%] p-4 rounded-2xl text-xs leading-relaxed ${
+                  m.sender === "builder" 
+                    ? "bg-primary text-white rounded-br-none shadow-glow" 
+                    : "bg-white dark:bg-white/5 text-gray-700 dark:text-gray-300 border border-black/5 dark:border-white/5 rounded-bl-none shadow-sm"
+                }`}>
+                  <p>{m.text}</p>
+                  <p className={`text-[8px] mt-1 font-black uppercase opacity-50 ${m.sender === 'builder' ? 'text-right' : 'text-left'}`}>
+                    {m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="p-6 bg-white dark:bg-surface-dark border-t border-black/5 dark:border-white/5 transition-colors">
+          <div className="relative">
+            <input 
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              placeholder="Send instruction to client..."
+              className="w-full bg-gray-100 dark:bg-black/40 border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-6 pr-14 text-sm text-gray-900 dark:text-white focus:border-primary outline-none transition-all font-medium"
+            />
+            <button 
+              onClick={handleSend}
+              disabled={isSending}
+              className="absolute right-2 top-1/2 -translate-y-1/2 size-10 bg-primary text-white rounded-xl shadow-lg hover:shadow-glow transition-all flex items-center justify-center disabled:opacity-50"
+            >
+              <span className="material-symbols-outlined text-lg">{isSending ? 'sync' : 'send'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

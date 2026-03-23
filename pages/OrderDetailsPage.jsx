@@ -5,21 +5,21 @@ const OrderDetailsPage = ({ order: initialOrder, onBack }) => {
   const [order, setOrder] = useState(initialOrder);
   const [chatInput, setChatInput] = useState("");
   
-  // Default builder if none exists in order
+  if (!order) return null;
+
+  // Dynamic builder info or fallback
   const builder = order.builder || {
     name: "Cortex_Prime",
     specialty: "Neural Integration",
     avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=200"
   };
 
-  const [messages, setMessages] = useState([
-    {
-      role: "builder",
-      text: `Greetings. I'm ${builder.name}. I've just finished the initial thermal paste application and I'm moving onto cable management. Any specific lighting preferences for the RGB controller?`,
-    },
-  ]);
-
-  // Polling for status updates
+  /* 
+     LIVE COMMUNICATION (AJAX POLLING):
+     This effect uses asynchronous background requests to fetch the latest order state 
+     every 5 seconds. This is the "AJAX" part—it updates the UI with new messages 
+     from the builder without requiring the user to refresh their browser.
+  */
   useEffect(() => {
     const pollInterval = setInterval(async () => {
       try {
@@ -27,21 +27,35 @@ const OrderDetailsPage = ({ order: initialOrder, onBack }) => {
         if (!idToFetch) return;
         
         const updatedOrder = await api.fetchOrder(idToFetch);
-        if (updatedOrder && updatedOrder.status !== order.status) {
-          setOrder(prev => ({ ...prev, status: updatedOrder.status }));
+        if (updatedOrder) {
+          setOrder(updatedOrder);
         }
       } catch (err) {
-        console.error("Polling error:", err);
+        console.error("AJAX Polling error:", err);
       }
-    }, 5000); // Poll every 5 seconds
+    }, 5000); // 5-second interval for "live" feel
 
     return () => clearInterval(pollInterval);
-  }, [order.orderId, order._id, order.id, order.status]);
+  }, [order.orderId, order._id, order.id]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!chatInput.trim()) return;
-    setMessages([...messages, { role: "user", text: chatInput }]);
-    setChatInput("");
+    
+    const messageData = {
+      sender: "customer",
+      text: chatInput.trim()
+    };
+
+    try {
+      const idToUpdate = order.orderId || order._id || order.id;
+      const updatedOrder = await api.addOrderMessage(idToUpdate, messageData);
+      if (updatedOrder) {
+        setOrder(updatedOrder);
+        setChatInput("");
+      }
+    } catch (err) {
+      console.error("Failed to send message:", err);
+    }
   };
 
   const statusSteps = [
@@ -218,22 +232,35 @@ const OrderDetailsPage = ({ order: initialOrder, onBack }) => {
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 dark:bg-black/20 custom-scrollbar transition-colors">
-              {messages.map((m, i) => (
+              {(Array.isArray(order.messages) ? order.messages : []).map((m, i) => (
                 <div
                   key={i}
-                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex ${m.sender === "customer" ? "justify-end" : "justify-start"}`}
                 >
                   <div
                     className={`max-w-[85%] p-4 rounded-2xl text-xs leading-relaxed transition-all ${
-                      m.role === "user"
+                      m.sender === "customer"
                         ? "bg-primary text-white rounded-br-none shadow-glow"
                         : "bg-white dark:bg-white/5 text-gray-700 dark:text-gray-300 border border-black/5 dark:border-white/5 rounded-bl-none shadow-sm dark:shadow-none"
                     }`}
                   >
                     {m.text}
+                    {m.timestamp && (
+                      <p className={`text-[8px] mt-1 font-black uppercase opacity-50 ${m.sender === 'customer' ? 'text-right' : 'text-left'}`}>
+                        {new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
+              
+              {(!order.messages || order.messages.length === 0) && (
+                <div className="flex justify-start">
+                  <div className="max-w-[85%] p-4 rounded-2xl text-xs leading-relaxed transition-all bg-white dark:bg-white/5 text-gray-700 dark:text-gray-300 border border-black/5 dark:border-white/5 rounded-bl-none shadow-sm dark:shadow-none">
+                    Greetings. I'm {builder.name}. I've just finished the initial thermal paste application and I'm moving onto cable management. Any specific lighting preferences for the RGB controller?
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="p-6 bg-white dark:bg-surface-dark border-t border-black/5 dark:border-white/5 transition-colors">

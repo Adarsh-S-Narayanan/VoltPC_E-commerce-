@@ -95,6 +95,18 @@ export const updateOrder = async (orderId, orderData) => {
   }
 };
 
+export const addOrderMessage = async (orderId, messageData) => {
+  try {
+    const order = await fetchOrder(orderId);
+    if (!order) throw new Error('Order not found');
+    const updatedMessages = [...(order.messages || []), { ...messageData, timestamp: new Date() }];
+    return await updateOrder(orderId, { messages: updatedMessages });
+  } catch (error) {
+    console.error('Error in addOrderMessage:', error);
+    throw error;
+  }
+};
+
 export const fetchOrders = async (email = null) => {
   try {
     const url = email ? `${API_URL}/orders?email=${encodeURIComponent(email)}` : `${API_URL}/orders`;
