@@ -76,31 +76,42 @@ const AccountPage = ({ user, orders, onLogout, onViewOrder, onNavigate }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-8">
           <section className="bg-white dark:bg-surface-dark border border-black/5 dark:border-white/5 rounded-2xl p-8 shadow-light-card dark:shadow-none transition-all duration-300">
-            <h2 className="text-xl font-black text-gray-900 dark:text-white mb-6 uppercase tracking-widest flex items-center gap-2 transition-colors">
-              <span className="material-symbols-outlined text-primary">
-                history
-              </span>
-              Order Archive
-            </h2>
-            <div className="space-y-4">
-              {orders.length === 0 ? (
-                <div className="text-center py-10 opacity-30">
-                  <p className="text-xs font-black uppercase tracking-widest text-gray-500">
-                    No active transmissions
-                  </p>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-widest flex items-center gap-2 transition-colors">
+                <span className="material-symbols-outlined text-primary">
+                  history
+                </span>
+                Deployment History
+              </h2>
+              <button 
+                onClick={() => onNavigate("orders")}
+                className="text-primary text-[10px] font-black uppercase tracking-widest hover:underline flex items-center gap-1"
+              >
+                View All Orders
+                <span className="material-symbols-outlined text-xs">arrow_forward</span>
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-6 bg-gray-50 dark:bg-black/40 rounded-xl border border-black/5 dark:border-white/5 transition-all hover:border-primary/30 group">
+                <p className="text-gray-400 dark:text-gray-500 text-[9px] uppercase font-black tracking-[0.2em] mb-2">Total Transmissions</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-3xl font-black text-gray-900 dark:text-white group-hover:text-primary transition-colors">{orders.length}</p>
+                  <span className="material-symbols-outlined text-primary/20 group-hover:text-primary/40 transition-colors text-3xl">terminal</span>
                 </div>
-              ) : (
-                orders.map((order) => (
-                  <OrderRow
-                    key={order.id}
-                    id={order.id}
-                    date={order.date}
-                    status={order.status}
-                    total={`₹${order.total.toLocaleString()}`}
-                    onClick={() => onViewOrder(order.id)}
-                  />
-                ))
-              )}
+              </div>
+              <div 
+                onClick={() => onNavigate("orders")}
+                className="p-6 bg-primary/5 border border-primary/20 rounded-xl hover:bg-primary/10 transition-all cursor-pointer group flex flex-col justify-center"
+              >
+                <p className="text-primary text-[9px] uppercase font-black tracking-[0.2em] mb-1">Recent Activity</p>
+                <p className="text-gray-900 dark:text-white font-bold text-sm">
+                  {orders.length > 0 ? `Latest: ${orders[0].id || orders[0].orderId}` : "No active missions"}
+                </p>
+                <p className="text-primary text-[10px] font-black uppercase tracking-widest mt-2 flex items-center gap-1">
+                  Access Database <span className="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">chevron_right</span>
+                </p>
+              </div>
             </div>
           </section>
 
@@ -243,44 +254,6 @@ const AccountPage = ({ user, orders, onLogout, onViewOrder, onNavigate }) => {
     </div>
   );
 };
-
-const OrderRow = ({ id, date, status, total, onClick }) => (
-  <div
-    onClick={onClick}
-    className="flex items-center justify-between p-4 bg-gray-50 dark:bg-black/40 rounded-xl border border-black/5 dark:border-white/5 hover:border-primary transition-all cursor-pointer group shadow-sm dark:shadow-none"
-  >
-    <div>
-      <p className="text-gray-900 dark:text-white font-black group-hover:text-primary transition-colors">
-        {id}
-      </p>
-      <p className="text-gray-400 dark:text-gray-500 text-[10px] uppercase font-black tracking-widest transition-colors">
-        {date}
-      </p>
-    </div>
-    <div className="text-right flex items-center gap-6">
-      <div>
-        <p className="text-gray-900 dark:text-white font-mono text-sm transition-colors">
-          {total}
-        </p>
-        <p className="text-primary text-[10px] uppercase font-black tracking-widest">
-          {status}
-        </p>
-      </div>
-      <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">
-        chevron_right
-      </span>
-    </div>
-  </div>
-);
-
-const StatusCard = ({ label, value, color }) => (
-  <div className="p-4 bg-gray-50 dark:bg-black/40 rounded-xl border border-black/5 dark:border-white/5 transition-colors">
-    <p className="text-gray-400 dark:text-gray-500 text-[9px] uppercase font-black tracking-widest mb-1 transition-colors">
-      {label}
-    </p>
-    <p className={`text-xl font-black ${color} transition-colors`}>{value}</p>
-  </div>
-);
 
 const SupportButton = ({ icon, label, onClick }) => (
   <button 

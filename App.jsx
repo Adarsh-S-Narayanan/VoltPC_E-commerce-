@@ -12,6 +12,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import AccountPage from "./pages/AccountPage";
 import AuthPage from "./pages/AuthPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
+import OrdersPage from "./pages/OrdersPage";
 import CustomerReviews from "./pages/CustomerReviews";
 import AdminPage from "./pages/AdminPage";
 import AboutPage from "./pages/AboutPage";
@@ -131,8 +132,8 @@ const App = () => {
         finalView = "account";
       }
       
-      // Refresh orders when going to account or order-details
-      if (user && (finalView === "account" || finalView === "order-details")) {
+      // Refresh orders when going to account, orders, or order-details
+      if (user && (finalView === "account" || finalView === "orders" || finalView === "order-details")) {
         api.fetchOrders(user.email).then(data => {
           if (data && data.length > 0) {
             setOrders(prev => {
@@ -482,6 +483,17 @@ const App = () => {
               navigateTo("order-details");
             }}
             onNavigate={navigateTo}
+          />
+        );
+      case "orders":
+        return (
+          <OrdersPage
+            orders={orders}
+            onViewOrder={(id) => {
+              setSelectedOrderId(id);
+              navigateTo("order-details");
+            }}
+            onBack={() => navigateTo("account")}
           />
         );
       case "order-details":
