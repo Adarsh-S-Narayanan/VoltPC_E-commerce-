@@ -19,7 +19,7 @@ const SupportPage = ({ onNavigate }) => {
           description="Technical documentation, driver repositories, and direct engineer access."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 max-w-4xl mx-auto">
           <SupportCard
             icon="auto_repair"
             title="Troubleshooting"
@@ -32,12 +32,6 @@ const SupportPage = ({ onNavigate }) => {
             title="Driver Cloud"
             desc="Access the latest firmware and utility software specifically tuned for your build serial."
             onClick={() => onNavigate("drivers")}
-          />
-
-          <SupportCard
-            icon="headset_mic"
-            title="Engineer Chat"
-            desc="Direct line to the engineers who hand-built your machine. 24/7 priority support."
           />
         </div>
 

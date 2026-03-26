@@ -27,7 +27,7 @@ const Navbar = ({
           onClick={onNavigateHome}
         >
           <img 
-            src="/logo.png" 
+            src="/logofinal.svg" 
             alt="VoltPC Logo" 
             className="h-14 w-auto scale-125 group-hover:drop-shadow-[0_0_8px_rgba(123,29,205,0.8)] transition-all duration-300"
           />

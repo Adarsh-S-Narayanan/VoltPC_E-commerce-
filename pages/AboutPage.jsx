@@ -1,58 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import PageHeader from "../components/PageHeader";
 
-/* ─── Static data ──────────────────────────────────────────────────── */
-const STATS = [
-  { value: "2019", label: "Founded" },
-  { value: "500+", label: "Rigs Built" },
-  { value: "98%", label: "Satisfaction" },
-  { value: "24/7", label: "Support" },
-];
-
-const VALUES = [
-  {
-    icon: "precision_manufacturing",
-    title: "Precision Craft",
-    desc: "Every build is hand-assembled, cable-managed, and stress tested for 72 hours before it leaves our workshop.",
-  },
-  {
-    icon: "bolt",
-    title: "Performance First",
-    desc: "We source only top-tier components and validate thermal performance at every voltage level.",
-  },
-  {
-    icon: "support_agent",
-    title: "Lifetime Support",
-    desc: "Our engineers are reachable 24/7. We stand behind every rig with a 3-year warranty and free tune-ups.",
-  },
-  {
-    icon: "eco",
-    title: "Sustainable Tech",
-    desc: "Responsible sourcing, eco packaging, and a recycling programme for old components – tech without guilt.",
-  },
-];
-
-const TEAM = [
-  {
-    name: "Adarsh S. Narayanan",
-    role: "Founder & Lead Engineer",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200",
-    bio: "10+ years building extreme performance rigs for gamers and creators across South India.",
-  },
-  {
-    name: "Rhea Menon",
-    role: "Hardware Architect",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200",
-    bio: "Specialises in thermal dynamics and custom water-cooling loop design.",
-  },
-  {
-    name: "Kiran Dev",
-    role: "BIOS & Overclocking",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200",
-    bio: "Certfied AMD & Intel partner engineer. Benchmarks on weekends for fun.",
-  },
-];
-
 /* ─── Dark Leaflet map (OpenStreetMap, no API key needed) ─────────── */
 const STORE_LAT  = 9.5516;   // Kanjirappally, Kerala
 const STORE_LNG  = 76.7782;
@@ -114,7 +62,7 @@ const DarkMap = () => {
               box-shadow:0 0 20px rgba(123,29,205,0.6),0 0 40px rgba(123,29,205,0.3);
               animation:ping 2s cubic-bezier(0,0,0.2,1) infinite;
             ">
-              <img src="/logo.png" style="width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(123,29,205,0.8));" />
+              <img src="/logofinal.svg" style="width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(123,29,205,0.8));" />
             </div>
             <div style="
               position:absolute;
@@ -149,7 +97,7 @@ const DarkMap = () => {
             box-shadow:0 0 24px rgba(123,29,205,0.3);
           ">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-              <img src="/logo.png" style="width:20px;height:20px;object-fit:contain;" />
+              <img src="/logofinal.svg" style="width:20px;height:20px;object-fit:contain;" />
               <span style="font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:0.1em;">VoltPC Engineering</span>
             </div>
             <div style="color:#a78bfa;font-size:12px;line-height:1.6;">
@@ -246,6 +194,64 @@ const TeamCard = ({ name, role, avatar, bio }) => (
 
 /* ─── Main page ─────────────────────────────────────────────────────── */
 const AboutPage = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // XMLHttpRequest for AJAX data loading
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "/data/aboutData.json", true);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          try {
+            const jsonData = JSON.parse(xhr.responseText);
+            setData(jsonData);
+            setLoading(false);
+          } catch (e) {
+            console.error("Error parsing JSON:", e);
+            setError("Failed to parse page data.");
+            setLoading(false);
+          }
+        } else {
+          console.error("AJAX Error:", xhr.statusText);
+          setError("Failed to load page content.");
+          setLoading(false);
+        }
+      }
+    };
+    xhr.send();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+          <span className="text-primary font-black uppercase tracking-widest text-xs">Loading Story...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center p-6 text-center">
+        <div>
+          <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-4">OOPS! SOMETHING WENT WRONG.</h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-8">{error || "Could not load the page content."}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-8 py-3 bg-primary text-white font-black uppercase tracking-widest text-sm rounded-xl shadow-glow"
+          >
+            Retry Loading
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pt-20 bg-background-light dark:bg-background-dark min-h-screen transition-colors duration-300">
       {/* ── Hero ── */}
@@ -255,23 +261,21 @@ const AboutPage = () => {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black tracking-[0.2em] uppercase mb-8">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              Our Story
+              {data.hero.badge}
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white leading-[0.9] tracking-tighter mb-8">
-              BUILT IN{" "}
+              {data.hero.titleLine1}{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">
-                KERALA.
+                {data.hero.titleHighlight1}
               </span>
               <br />
-              BUILT FOR THE{" "}
+              {data.hero.titleLine2}{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">
-                WORLD.
+                {data.hero.titleHighlight2}
               </span>
             </h1>
             <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl leading-relaxed max-w-2xl">
-              VoltPC Engineering was born in Kanjirappally, Kerala — a small town with
-              a massive passion for technology. We set out to prove that world-class
-              custom PCs don't have to come from a big city.
+              {data.hero.description}
             </p>
           </div>
         </div>
@@ -281,7 +285,7 @@ const AboutPage = () => {
 
         {/* ── Stats ── */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {STATS.map((s) => (
+          {data.stats.map((s) => (
             <StatCard key={s.label} value={s.value} label={s.label} />
           ))}
         </section>
@@ -290,24 +294,20 @@ const AboutPage = () => {
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <span className="text-primary text-xs font-black uppercase tracking-[0.3em] block mb-4">
-              Our Mission
+              {data.mission.badge}
             </span>
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-tight mb-6">
-              ENGINEERING THE{" "}
+              {data.mission.title.split('APEX')[0]}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-400">
                 APEX
               </span>{" "}
-              OF PERSONAL COMPUTING
+              {data.mission.title.split('APEX')[1]}
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed mb-6">
-              Every VoltPC is a precision instrument — hand-assembled, individually
-              stress-tested, and shipped with a configuration report. We believe gaming
-              and creative power should be accessible to everyone, not just those in
-              metro cities.
+              {data.mission.description1}
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              From our workshop in Kanjirappally, we ship to customers across India.
-              Each rig carries a slice of Kerala's innovation spirit inside its chassis.
+              {data.mission.description2}
             </p>
           </div>
           <div className="relative aspect-video rounded-3xl overflow-hidden bg-surface-dark border border-white/5 shadow-2xl">
@@ -316,12 +316,11 @@ const AboutPage = () => {
               memory
             </span>
             <div className="relative z-10 flex flex-col items-start justify-end h-full p-10">
-              <div className="text-white font-black text-2xl leading-tight">
-                "Every component has a purpose.<br />
-                Every build tells a story."
+              <div className="text-white font-black text-2xl leading-tight whitespace-pre-line">
+                "{data.mission.quote}"
               </div>
               <div className="text-primary text-xs font-bold uppercase tracking-[0.2em] mt-3">
-                — Adarsh, Founder
+                {data.mission.quoteAuthor}
               </div>
             </div>
           </div>
@@ -336,7 +335,7 @@ const AboutPage = () => {
             <div className="h-px flex-1 bg-primary/10" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {VALUES.map((v) => (
+            {data.values.map((v) => (
               <ValueCard key={v.title} {...v} />
             ))}
           </div>
@@ -351,7 +350,7 @@ const AboutPage = () => {
             <div className="h-px flex-1 bg-primary/10" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {TEAM.map((t) => (
+            {data.team.map((t) => (
               <TeamCard key={t.name} {...t} />
             ))}
           </div>
@@ -361,7 +360,7 @@ const AboutPage = () => {
         <section>
           <div className="flex items-center gap-4 mb-12">
             <span className="text-primary text-xs font-black uppercase tracking-[0.3em]">
-              Find Us
+              {data.location.badge}
             </span>
             <div className="h-px flex-1 bg-primary/10" />
           </div>
@@ -373,23 +372,29 @@ const AboutPage = () => {
                 <div className="flex items-center gap-3 mb-6">
                   <span className="material-symbols-outlined text-primary text-3xl">store</span>
                   <h3 className="font-black text-gray-900 dark:text-white text-xl uppercase tracking-tight">
-                    VoltPC Workshop
+                    {data.location.title}
                   </h3>
                 </div>
 
                 <InfoRow icon="location_on" label="Address">
-                  Kanjirappally, Kottayam<br />
-                  Kerala, India — 686507
+                  {data.location.addressLines.map((line, i) => (
+                    <React.Fragment key={i}>
+                      {line}{i < data.location.addressLines.length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
                 </InfoRow>
                 <InfoRow icon="schedule" label="Hours">
-                  Mon – Sat: 10 AM – 7 PM<br />
-                  Sunday: 11 AM – 4 PM
+                  {data.location.hoursLines.map((line, i) => (
+                    <React.Fragment key={i}>
+                      {line}{i < data.location.hoursLines.length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
                 </InfoRow>
                 <InfoRow icon="call" label="Phone">
-                  +91 98765 43210
+                  {data.location.phone}
                 </InfoRow>
                 <InfoRow icon="mail" label="Email">
-                  vaultpcgo@gmail.com
+                  {data.location.email}
                 </InfoRow>
 
                 <a
@@ -408,10 +413,10 @@ const AboutPage = () => {
                 <span className="material-symbols-outlined text-primary text-4xl">verified</span>
                 <div>
                   <div className="font-black text-gray-900 dark:text-white text-sm uppercase tracking-wide">
-                    Authorised Service Centre
+                    {data.location.mapBadgeTitle}
                   </div>
                   <div className="text-gray-500 dark:text-gray-400 text-xs mt-1 leading-relaxed">
-                    Certified AMD & Intel partner workshop
+                    {data.location.mapBadgeDesc}
                   </div>
                 </div>
               </div>

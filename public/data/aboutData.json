@@ -1,0 +1,76 @@
+{
+  "hero": {
+    "badge": "Our Story",
+    "titleLine1": "BUILT IN",
+    "titleHighlight1": "KERALA.",
+    "titleLine2": "BUILT FOR THE",
+    "titleHighlight2": "WORLD.",
+    "description": "VoltPC Engineering was born in Kanjirappally, Kerala — a small town with a massive passion for technology. We set out to prove that world-class custom PCs don't have to come from a big city."
+  },
+  "stats": [
+    { "value": "2019", "label": "Founded" },
+    { "value": "500+", "label": "Rigs Built" },
+    { "value": "98%", "label": "Satisfaction" },
+    { "value": "24/7", "label": "Support" }
+  ],
+  "mission": {
+    "badge": "Our Mission",
+    "title": "ENGINEERING THE APEX OF PERSONAL COMPUTING",
+    "description1": "Every VoltPC is a precision instrument — hand-assembled, individually stress-tested, and shipped with a configuration report. We believe gaming and creative power should be accessible to everyone, not just those in metro cities.",
+    "description2": "From our workshop in Kanjirappally, we ship to customers across India. Each rig carries a slice of Kerala's innovation spirit inside its chassis.",
+    "quote": "Every component has a purpose.\nEvery build tells a story.",
+    "quoteAuthor": "— Adarsh, Founder"
+  },
+  "values": [
+    {
+      "icon": "precision_manufacturing",
+      "title": "Precision Craft",
+      "desc": "Every build is hand-assembled, cable-managed, and stress tested for 72 hours before it leaves our workshop."
+    },
+    {
+      "icon": "bolt",
+      "title": "Performance First",
+      "desc": "We source only top-tier components and validate thermal performance at every voltage level."
+    },
+    {
+      "icon": "support_agent",
+      "title": "Lifetime Support",
+      "desc": "Our engineers are reachable 24/7. We stand behind every rig with a 3-year warranty and free tune-ups."
+    },
+    {
+      "icon": "eco",
+      "title": "Sustainable Tech",
+      "desc": "Responsible sourcing, eco packaging, and a recycling programme for old components – tech without guilt."
+    }
+  ],
+  "team": [
+    {
+      "name": "Adarsh S. Narayanan",
+      "role": "Founder & Lead Engineer",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200",
+      "bio": "10+ years building extreme performance rigs for gamers and creators across South India."
+    },
+    {
+      "name": "Rhea Menon",
+      "role": "Hardware Architect",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200",
+      "bio": "Specialises in thermal dynamics and custom water-cooling loop design."
+    },
+    {
+      "name": "Kiran Dev",
+      "role": "BIOS & Overclocking",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200",
+      "bio": "Certfied AMD & Intel partner engineer. Benchmarks on weekends for fun."
+    }
+  ],
+  "location": {
+    "badge": "Find Us",
+    "title": "VoltPC Workshop",
+    "addressLines": ["Kanjirappally, Kottayam", "Kerala, India — 686507"],
+    "hoursLines": ["Mon – Sat: 10 AM – 7 PM", "Sunday: 11 AM – 4 PM"],
+    "phone": "+91 98765 43210",
+    "email": "vaultpcgo@gmail.com",
+    "badgeTitle": "Authorised Service Centre",
+    "badgeDesc": "Certified AMD & Intel partner workshop"
+  }
+}
