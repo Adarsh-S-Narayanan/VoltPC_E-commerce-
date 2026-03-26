@@ -33,6 +33,8 @@ const CheckoutPage = ({ items, onComplete, user }) => {
   }, [user]);
 
   const total = items.reduce((acc, item) => acc + item.price, 0);
+  const advanceAmount = Math.floor(total * 0.4);
+  const remainingAmount = total - advanceAmount;
 
   const handleInitiatePayment = async (e) => {
     e.preventDefault();
@@ -42,11 +44,11 @@ const CheckoutPage = ({ items, onComplete, user }) => {
     
     try {
       const orderData = {
-        amount: 0, // 0 rupees as requested
+        amount: advanceAmount, // 40% advance as requested
         customerName: `${firstName} ${lastName}`.trim(),
         customerEmail: user?.email || "guest@example.com",
         merchantOrderId: `VPC-${Date.now()}`,
-        transactionNote: `Order for ${firstName} ${lastName}`
+        transactionNote: `Order for ${firstName} ${lastName} (40% Advance)`
       };
 
       const uroPayOrder = await api.createUroPayOrder(orderData);
@@ -178,7 +180,7 @@ const CheckoutPage = ({ items, onComplete, user }) => {
                 >
                   {loading
                     ? "PREPARING TRANSMISSION..."
-                    : `INITIATE PAYMENT ₹${total.toLocaleString()}`}
+                    : `PAY 40% ADVANCE ₹${advanceAmount.toLocaleString()}`}
                 </button>
               </>
             )}
@@ -290,9 +292,30 @@ const CheckoutPage = ({ items, onComplete, user }) => {
             ))}
           </div>
           <div className="h-px bg-black/5 dark:bg-white/5 mb-6 transition-colors"></div>
-          <div className="flex justify-between text-2xl font-black text-gray-900 dark:text-white transition-colors">
-            <span>TOTAL</span>
-            <span className="font-mono">₹{total.toLocaleString()}</span>
+          
+          <div className="space-y-4">
+            <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest transition-colors">
+              <span>Total Amount</span>
+              <span className="font-mono">₹{total.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-sm text-primary font-black uppercase tracking-widest transition-colors">
+              <span>Advance (40%)</span>
+              <span className="font-mono">₹{advanceAmount.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-lg font-black text-gray-900 dark:text-white transition-colors border-t border-black/5 dark:border-white/5 pt-4">
+              <span>TO PAY NOW</span>
+              <span className="font-mono">₹{advanceAmount.toLocaleString()}</span>
+            </div>
+            
+            <div className="mt-6 p-4 bg-primary/5 rounded-2xl border border-primary/10">
+              <div className="flex items-center gap-2 text-primary mb-1">
+                <span className="material-symbols-outlined text-sm">info</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">Payment Protocol</span>
+              </div>
+              <p className="text-[11px] text-gray-600 dark:text-gray-300 font-medium leading-relaxed">
+                Pay <span className="font-bold text-primary">₹{advanceAmount.toLocaleString()}</span> as a secure advance. The remaining <span className="font-bold text-primary">₹{remainingAmount.toLocaleString()}</span> (60%) shall be paid on pick up.
+              </p>
+            </div>
           </div>
         </div>
       </div>

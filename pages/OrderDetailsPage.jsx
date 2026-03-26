@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as api from "../services/apiService";
+import { generateInvoice } from "../services/invoiceGenerator";
 
 const OrderDetailsPage = ({ order: initialOrder, onBack }) => {
   const [order, setOrder] = useState(initialOrder);
@@ -69,17 +70,31 @@ const OrderDetailsPage = ({ order: initialOrder, onBack }) => {
 
   return (
     <div className="pt-24 min-h-screen bg-background-light dark:bg-background-dark max-w-[1440px] mx-auto px-6 pb-20 transition-colors duration-300">
-      <button
-        onClick={onBack}
-        className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors mb-8 group"
-      >
-        <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">
-          arrow_back
-        </span>
-        <span className="text-xs font-black uppercase tracking-widest">
-          Return to Dashboard
-        </span>
-      </button>
+      <div className="flex items-center justify-between mb-8">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors group"
+        >
+          <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">
+            arrow_back
+          </span>
+          <span className="text-xs font-black uppercase tracking-widest">
+            Return to Dashboard
+          </span>
+        </button>
+
+        <button
+          onClick={() => generateInvoice(order)}
+          className="flex items-center gap-2 px-6 py-2.5 bg-primary/10 border border-primary/20 text-primary hover:bg-primary hover:text-white rounded-xl transition-all group shadow-sm active:scale-95"
+        >
+          <span className="material-symbols-outlined text-sm group-hover:animate-bounce">
+            download
+          </span>
+          <span className="text-xs font-black uppercase tracking-widest">
+            Download Invoice
+          </span>
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-8">
@@ -88,7 +103,7 @@ const OrderDetailsPage = ({ order: initialOrder, onBack }) => {
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter uppercase transition-colors">
-                    Order: {order.id}
+                    Order: {order.id || order.orderId}
                   </h1>
                   <p className="text-primary text-xs font-black uppercase tracking-[0.3em] mt-1">
                     Status: {order.status}

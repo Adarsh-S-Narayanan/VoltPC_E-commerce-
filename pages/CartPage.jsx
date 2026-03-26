@@ -74,9 +74,9 @@ const CartPage = ({ items, onRemove, onCheckout, onContinueShopping }) => {
                 </span>
               </div>
               <div className="flex justify-between text-gray-500 dark:text-gray-400 transition-colors">
-                <span>Shipping</span>
+                <span>Assembly Price</span>
                 <span className="text-primary font-bold uppercase text-xs">
-                  Standard Dispatch
+                  Free Assembly
                 </span>
               </div>
               <div className="h-px bg-black/5 dark:bg-white/5 my-2 transition-colors"></div>
